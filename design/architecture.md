@@ -2,4 +2,5 @@
 
 ## Software Overview
 
-*todo*
+## Software Context
+![Context](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/nhjschulz/EInkPicFrame/master/design/plantuml/SwContext.plantuml)
