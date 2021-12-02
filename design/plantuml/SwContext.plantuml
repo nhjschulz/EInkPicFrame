@@ -1,0 +1,42 @@
+@startuml
+
+
+node EInkFrame {
+    node "E-Ink Display" as DISPLAY {
+
+    }
+
+    node MainBoard as BOARD {
+        node AVR328P  as UC  << uc >>{
+            file firmware
+        }
+
+        node LED as LED
+
+        node UART as RS232 
+
+        node DispFET as DispFet
+        node SDFET as SDFet
+        
+        interface SPI as SPI
+    }
+
+    node SD-Card as SDCARD {
+        file Images
+    }
+
+    node Battery as BAT {
+
+    }
+    BAT --> BOARD : Power
+    UC -- SPI
+    SPI -- SDCARD : SPI
+    SPI -- DISPLAY : SPI
+    UC -- DispFet
+    UC -- SDFet
+    UC -up-> RS232 : Debug
+    UC -up-> LED
+    DispFet --> DISPLAY : Power
+    SDFet --> SDCARD : Power
+}
+@enduml
