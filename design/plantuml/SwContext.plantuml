@@ -1,5 +1,7 @@
-@startuml
+@startuml Cotext
 
+skinparam linetype polyline
+skinparam linetype ortho
 
 node EInkFrame {
     node "E-Ink Display" as DISPLAY {
@@ -19,6 +21,8 @@ node EInkFrame {
         node SDFET as SDFet
         
         interface SPI as SPI
+
+        Interface ISP as ISP
     }
 
     node SD-Card as SDCARD {
@@ -28,6 +32,9 @@ node EInkFrame {
     node Battery as BAT {
 
     }
+
+    node PC as PC
+
     BAT --> BOARD : Power
     UC -- SPI
     SPI -- SDCARD : SPI
@@ -38,5 +45,7 @@ node EInkFrame {
     UC -up-> LED
     DispFet --> DISPLAY : Power
     SDFet --> SDCARD : Power
+    UC -- ISP
+    PC --- ISP
 }
 @enduml

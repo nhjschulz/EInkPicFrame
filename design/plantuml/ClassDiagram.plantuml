@@ -27,26 +27,42 @@ package app {
 }
 
 package Service {
-    class FileIO
+    class FileIO {
+        +enble(bool)
+    }
     class FatFS
     class ServiceInit {
-        +do    
+      
     }
-    class Display
-    class SDCard
+    class Display {
+        +enable(bool)
+    }
+    class SDCard {
+        +enable(bool)
+    }
     class Debug
-    class Sleep
+    class Sleep {
+        +enter(enum Duration duration)
+    }
 
 }
 
-package Mcal {
+package Hal {
 
     class Spi 
-    class Uart
-    class Sleep
+    class Uart {
+        init(Baud,bits, parity, stopBit)
+
+    }
+    
     class HalInit
-    class Power 
-    class Led
+    class Power {
+        +enable(Device, bool)
+        +sleep()
+    }
+    class Led {
+        +set(id, bool state)
+    }
 
 
 }
