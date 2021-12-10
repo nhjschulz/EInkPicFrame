@@ -1,6 +1,17 @@
 # EInkPicFrame (Work In Progress)
-Battery powered picture frame using color E-Ink display
 
-The idea is to develop a picture frame that shows a daily chaning picture on en E-Ink screen and runs on battery.
+A battery powered picture frame using color E-Ink display.
+
+## Requirements
+
+A set of project requirements is collected here: [Requirements](design/Requirements.md)
+
+## Concept
+
+Block diagram of the system:
 
 ![Context](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/nhjschulz/EInkPicFrame/master/design/plantuml/SwContext.plantuml)
+
+## Part List
+
+The system is assembled using the following parts: [Partlist](design/Parts.md)
