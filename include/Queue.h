@@ -31,14 +31,25 @@
  */
 #include <stdint.h>
 
-/** Implementation of a fixed size queue that can hold ""S" elements of type "T".
- *  Note: S must be larger then zero to be useful.
+/** Implementation of a fixed size queue elements of type "T".
+ *  The queue buffer is provided as a T array of N > 2 elements.
+ *  The Queue capacity is one less the array entries. This space
+ *  loss is due to emtpy vs. full detection. 
  */
-template<typename T, uint8_t S>
+template<typename T>
 class Queue
 {
     public:
-        Queue();
+
+        /** Construct a queue with given buffer 
+         *  @param[in] buffer array with 'entries of T elements 
+         *  @param[in] number of entries in buffer
+         */
+        Queue(T buffer[], uint8_t entries);
+        
+        ~Queue()
+        {
+        }
 
         /** check if queue is empty */
         bool    isEmpty() const;
@@ -55,39 +66,39 @@ class Queue
         /** reset the queue to be empty */
         void    clear();
 
-        /** add element to queue 
+        /** Add element to queue 
          *  @param[in] element  element to copy into queue
          *  @return true of succesfull, false if queue full
          */
         bool    put(const T& element);
 
-        /** get element from queue 
+        /** Get element from queue 
          * @param[out] element  destination for extracted element
          * @return true if element returned, false if queue empty
         */
         bool    get(T& element);
 
     private:
-        static const 
-        uint8_t M_LEN = S + 1;       /**< internal consumed space   */
 
         uint8_t   m_wrIdx;           /**< next write position       */
-        uint8_t   m_rdIdx;           /**<next read position         */
-        T         m_buffer[M_LEN];   /**< memory for Queue elements */
-
+        uint8_t   m_rdIdx;           /**< next read position        */
+        uint8_t   m_size;            /**< allocated buffer space    */
+        T*        m_buffer;          /**< memory for Queue elements */
 };
 
 // ---------------------- Iniliners ------------------------------------------
 
-template <class T, uint8_t S> 
-Queue<T,S>::Queue() :
+template <class T> 
+Queue<T>::Queue(T buffer[], uint8_t size) :
     m_wrIdx(0u),
-    m_rdIdx(0u)
+    m_rdIdx(0u),
+    m_size(size),
+    m_buffer(buffer)
 {
 }
  
-template <class T, uint8_t S> 
-inline uint8_t Queue<T,S>::used() const
+template <class T> 
+inline uint8_t Queue<T>::used() const
 {
     uint8_t usedSlots(m_wrIdx);
 
@@ -97,42 +108,41 @@ inline uint8_t Queue<T,S>::used() const
     }
     else
     {
-        usedSlots  += M_LEN - m_rdIdx + 1;
+        usedSlots  += m_size - m_rdIdx + 1;
     }
 
     return usedSlots;
 }
 
-template <class T, uint8_t S> 
-inline uint8_t Queue<T, S>::available() const
+template <class T> 
+inline uint8_t Queue<T>::available() const
 {
-    return S - this->used();
+    return m_size - this->used() - 1;
 }
 
-template <class T, uint8_t S> 
-inline bool Queue<T, S>::isEmpty() const
+template <class T> 
+inline bool Queue<T>::isEmpty() const
 {
     return m_wrIdx == m_rdIdx;
 }
 
-template <class T, uint8_t S> 
-inline bool Queue<T,S>::isFull() const
+template <class T> 
+inline bool Queue<T>::isFull() const
 {
-    return S == this->used();
+    return this->used() == (m_size - 1);
 }
 
-
-template <class T, uint8_t S> 
-inline void Queue<T,S>::clear()
+template <class T> 
+inline void Queue<T>::clear()
 {
     m_wrIdx = 0u;
     m_rdIdx = 0u;
 }
 
-template <class T, uint8_t S> 
-inline bool Queue<T, S>::put(const T& element)
+template <class T> 
+inline bool Queue<T>::put(const T& element)
 {
-    uint8_t next((m_wrIdx + 1) % M_LEN); /**< next insert idx */
+    uint8_t next((m_wrIdx + 1) % m_size); /**< next insert idx */
     bool    result(false);
     
     if (next != m_rdIdx)
@@ -140,24 +150,24 @@ inline bool Queue<T, S>::put(const T& element)
         // queue is not yet full 
 
         m_buffer[next] = element;
-        m_wrIdx = next;
+        m_wrIdx = next;   /* atomic 8bit, no need for lock */
         result = true;
     }
 
     return result;
 }
 
-template <class T, uint8_t S> 
-inline bool Queue<T, S>::get(T& element)
+template <class T> 
+inline bool Queue<T>::get(T& element)
 {
     bool result(false);
 
     if (!isEmpty()) 
     {
-        uint8_t next((m_rdIdx + 1) % M_LEN); /**< next read idx */
+        uint8_t next((m_rdIdx + 1) % m_size); /**< next read idx */
 
         element = m_buffer[next];
-        m_rdIdx = next;
+        m_rdIdx = next;            /* atomic 8bit, no need for lock */
         result  = true;
     }
 

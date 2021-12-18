@@ -31,43 +31,43 @@
  */
 
 /** Unittesting of Queue.h */
+#include <stdio.h>
 
 #include <unity.h>
 #include "Queue.h"
-
 void test_queue_generic(void) 
 {
-    Queue<uint8_t, 11> q;
+    uint8_t buf[11];
+    Queue<uint8_t> q(buf, 11);
 
     TEST_ASSERT_EQUAL(true, q.isEmpty());
     TEST_ASSERT_EQUAL(false, q.isFull());
-    TEST_ASSERT_EQUAL(11, q.available());
     TEST_ASSERT_EQUAL(0, q.used());
-
+    TEST_ASSERT_EQUAL(10, q.available());
     TEST_ASSERT_EQUAL(true, q.put(0));
     TEST_ASSERT_EQUAL(false, q.isEmpty());
     TEST_ASSERT_EQUAL(false, q.isFull());
-    TEST_ASSERT_EQUAL(10, q.available());
+    TEST_ASSERT_EQUAL(9, q.available());
     TEST_ASSERT_EQUAL(1, q.used());
     
     q.clear();
     TEST_ASSERT_EQUAL(true, q.isEmpty());
     TEST_ASSERT_EQUAL(false, q.isFull());
-    TEST_ASSERT_EQUAL(11, q.available());
+    TEST_ASSERT_EQUAL(10, q.available());
     TEST_ASSERT_EQUAL(0, q.used());
 
-    for (uint8_t val(1); val <= 11u; ++ val)
+    for (uint8_t val(1); val <= 10u; ++ val)
     {
         TEST_ASSERT_EQUAL(true, q.put(val));
         TEST_ASSERT_EQUAL(false, q.isEmpty());
-        TEST_ASSERT_EQUAL(val == 11u, q.isFull());
-        TEST_ASSERT_EQUAL(11u - val, q.available());
+        TEST_ASSERT_EQUAL(val == 10u, q.isFull());
+        TEST_ASSERT_EQUAL(10u - val, q.available());
         TEST_ASSERT_EQUAL(val, q.used());
     }
 
     TEST_ASSERT_EQUAL(false, q.put(0x55)); // fail on full
 
-    for (uint8_t val(1); val <= 11u; ++ val)
+    for (uint8_t val(1); val <= 10u; ++ val)
     {
         uint8_t getVal(0xFF);
         TEST_ASSERT_EQUAL(true, q.get(getVal));
@@ -75,14 +75,15 @@ void test_queue_generic(void)
     }
 
     uint8_t dummy(0xFF);
-    TEST_ASSERT_EQUAL(false, q.get(dummy));  // empty
+    TEST_ASSERT_EQUAL(false, q.get(dummy));  // emptypio
 
 }
 
 /** Test the corner casse of a one byte queue */
 void test_queue_1_element(void) 
 {
-    Queue<uint8_t, 1> singleByteQueue;
+    uint8_t buf[2];
+    Queue<uint8_t> singleByteQueue(buf,2);
 
     TEST_ASSERT_EQUAL(true, singleByteQueue.isEmpty());
     TEST_ASSERT_EQUAL(false, singleByteQueue.isFull());
