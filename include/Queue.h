@@ -173,3 +173,7 @@ inline bool Queue<T>::get(T& element)
 
     return result;
 }
+
+/** A byte queue typedef to avoid ugly template syntax
+ */
+typedef Queue<uint8_t> ByteQueue;
