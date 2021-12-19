@@ -30,65 +30,77 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
+/** Debugging support - yes printf like (enabled with -D WITH_DEBUG) */
 
-#include <avr/io.h>
-#include <util/delay.h>
-
-#include "hal/Uart/Uart.h"
-#include <avr/pgmspace.h>
-#include <avr/interrupt.h>
+#if defined(WITH_DEBUG)
 
 #include "service/Debug/Debug.h"
+#include "hal/Uart/Uart.h"
 
-uint8_t sendBuff[40]; 
-ByteQueue uartSendQ(sendBuff, sizeof(sendBuff));
+#include <stdio.h>
+#include <stdarg.h>
 
-uint8_t readBuff[16u]; 
-Queue<uint8_t> uartReadQ(readBuff, sizeof(readBuff));
+/*******************************************************************************
+    Module statics data
+*******************************************************************************/
+/** FILE stream to UART */
+static FILE uartFileStream; 
 
-int main(int argc, char** argv)
+/*******************************************************************************
+    Module statics
+*******************************************************************************/
+
+/** Send a byte to uart
+ *  @param[in] character byte to send
+ *  @param[in] stream ignored, always uart
+ */
+static int uartPutChar(char character, FILE *stream);
+
+namespace service
 {
-
-    (void)argc;
-    (void)argv;
-
-    hal::Uart::Cfg cfg;
-
-    cfg.m_baudRate = hal::Uart::BAUD_9600;
-    cfg.m_mode = hal::Uart::MODE_READWRITE;
-    cfg.m_parity = hal::Uart::PARITY_NONE;
-    cfg.m_stopBits = hal::Uart::STOPBIT_1;
-    cfg.m_inputQ = &uartReadQ;
-    cfg.m_outputQ = &uartSendQ;
-
-    hal::Uart& uart(hal::Uart::get());
-
-    uart.open(cfg);
-    DEBUG_INIT();
-
-    // pin used for LED debug temporary 
-    DDRB |= (1<<PB0);
-    PORTB &= ~(1<<PB0);
-//    PORTB |= (1<<PB0);
-
-
-    sei();
-
-    DEBUG_LOGP("EInkPicFrame V%d.%d\r\n", 0, 1);
-
-    for(;;)
+    
+    bool Debug::init()
     {
+        bool result(false);
 
-        uint8_t byte(0);
-
-        // local echo over UART test
-        //
-        if (hal::Uart::RET_SUCCESS == uart.receive(byte))
+        if (hal::Uart::get().canWrite())
         {
-            uart.send(byte);
+            uartFileStream.put = uartPutChar;
+            uartFileStream.get = nullptr;
+            uartFileStream.flags = _FDEV_SETUP_WRITE;
+            result = true;
         }
+
+        return result;
     }
 
-    return 0;
+    void Debug::log(const char * fmt, ...)
+    {
+        va_list args;
+        va_start (args, fmt);
+        vfprintf (&uartFileStream, fmt, args);
+        va_end (args);
+    }
+    
+    void Debug::logP(const char * fmt, ...)
+    {
+        va_list args;
+        va_start (args, fmt);
+        vfprintf_P(&uartFileStream, fmt, args);
+        va_end (args);
+    }
 }
+
+static int uartPutChar(char character, FILE *stream)
+{
+    (void)stream;
+
+    while (hal::Uart::RET_SUCCESS != hal::Uart::get().send(character))
+    {
+
+    }
+
+	return 0;
+}
+
+#endif // defined(WITH_DEBUG)

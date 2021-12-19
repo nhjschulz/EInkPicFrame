@@ -37,6 +37,8 @@
 
 #include "Queue.h"
 
+#include <stdint.h>
+
 namespace hal
 {
     /** AVR ATMega328 Uart driver */
@@ -108,16 +110,16 @@ namespace hal
     	/** Supported modes */
         enum Mode 
         {
-            MODE_READ,      /**< read only           */
-            MODE_WRITE,     /**< write only          */
-            MODE_READWRITE, /**< read/write          */
-            MODE_INVALID    /**< defined wrong value */
+            MODE_READ =      0x01,     /**< read enabled        */
+            MODE_WRITE =     0x02,     /**< write enabled       */
+            MODE_READWRITE = 0x03,     /**< read/write          */
+            MODE_INVALID  =  0x00      /**< defined wrong value */
         };
 
         /** Uart configuration for opening */
         struct Cfg 
         {
-            Mode          m_mode;       /**< r/w/rw mode   */
+            uint8_t       m_mode;       /**< r/w/rw mode   */
             BaudRate      m_baudRate;   /**< baudrate      */
             Parity        m_parity;     /**< paritity mode */
             StopBits      m_stopBits;   /**< stop bits     */
@@ -146,7 +148,13 @@ namespace hal
 
         /** Read a byte
          */
-        RetVal read(uint8_t& byte);
+        RetVal receive(uint8_t& byte);
+
+        /** Check if UART is opened in write mode */
+        bool canWrite() 
+        {
+            return (m_isOpen && ( 0u != (m_cfg.m_mode & MODE_WRITE)));
+        }
 
         /** Singelton access 
         */
@@ -155,34 +163,34 @@ namespace hal
 
         private:
 
-            bool m_isOpen;             /**< indicate if UART connection is aktiv */
-            Cfg  m_cfg;                /**< configuration used on open           */
+        bool m_isOpen;             /**< indicate if UART connection is aktiv */
+        Cfg  m_cfg;                /**< configuration used on open           */
 
-            Uart(const Uart&);
-            Uart& operator=(const Uart&);
+        Uart(const Uart&);
+        Uart& operator=(const Uart&);
 
-            Uart();
-            ~Uart();
+        Uart();
+        ~Uart();
 
-            /** Interface for Data reg empty interrupt. 
-             *  Used to obtain next byte from output queue
-             * @paramn[out] byte next byte from output queue
-             * 
-             * @return true if a byte was available.
-             */
-            friend bool uart_isrGet(uint8_t& byte);
+        /** Interface for Data reg empty interrupt. 
+         *  Used to obtain next byte from output queue
+         * @paramn[out] byte next byte from output queue
+         * 
+         * @return true if a byte was available.
+         */
+        friend bool uart_isrGet(uint8_t& byte);
 
-            /** Interface for RX interrupt to data int the input queue
-             * @paramn[out] byte next byte from output queue
-             * 
-             * @return true if a byte could be stored.
-             */
-            friend bool uart_isrPut(uint8_t byte);    
+        /** Interface for RX interrupt to data int the input queue
+         * @paramn[out] byte next byte from output queue
+         * 
+         * @return true if a byte could be stored.
+         */
+        friend bool uart_isrPut(uint8_t byte);
+      
+        /**singleton  instance 
+         */
+        static Uart m_instance; 
 
-            /**singleton  instance 
-             */
-            static Uart m_instance; 
     };
-
 }
 #endif // UART_H_INCLUDED

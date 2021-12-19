@@ -30,65 +30,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
+#ifndef DEBUG_H_INCLUDED
+#define DEBUG_H_INCLUDED
 
-#include <avr/io.h>
-#include <util/delay.h>
+/** Debugging support (enabled with -D WITH_DEBUG) */
 
-#include "hal/Uart/Uart.h"
-#include <avr/pgmspace.h>
-#include <avr/interrupt.h>
+#if defined(WITH_DEBUG)
 
-#include "service/Debug/Debug.h"
+#define DEBUG_INIT()         service::Debug::init()
+#define DEBUG_LOG(fmt, ...)  service::Debug::log(fmt, __VA_ARGS__)
+#define DEBUG_LOGP(fmt, ...) service::Debug::logP(PSTR(fmt), __VA_ARGS__)
 
-uint8_t sendBuff[40]; 
-ByteQueue uartSendQ(sendBuff, sizeof(sendBuff));
-
-uint8_t readBuff[16u]; 
-Queue<uint8_t> uartReadQ(readBuff, sizeof(readBuff));
-
-int main(int argc, char** argv)
+namespace service
 {
-
-    (void)argc;
-    (void)argv;
-
-    hal::Uart::Cfg cfg;
-
-    cfg.m_baudRate = hal::Uart::BAUD_9600;
-    cfg.m_mode = hal::Uart::MODE_READWRITE;
-    cfg.m_parity = hal::Uart::PARITY_NONE;
-    cfg.m_stopBits = hal::Uart::STOPBIT_1;
-    cfg.m_inputQ = &uartReadQ;
-    cfg.m_outputQ = &uartSendQ;
-
-    hal::Uart& uart(hal::Uart::get());
-
-    uart.open(cfg);
-    DEBUG_INIT();
-
-    // pin used for LED debug temporary 
-    DDRB |= (1<<PB0);
-    PORTB &= ~(1<<PB0);
-//    PORTB |= (1<<PB0);
-
-
-    sei();
-
-    DEBUG_LOGP("EInkPicFrame V%d.%d\r\n", 0, 1);
-
-    for(;;)
+    /** Initialize debug module 
+     *  @return false on failure UART openend with write before ?)
+     */
+    class Debug 
     {
+        public:
 
-        uint8_t byte(0);
+        /** Initialize debug module 
+        */
+        static bool init(void);
 
-        // local echo over UART test
-        //
-        if (hal::Uart::RET_SUCCESS == uart.receive(byte))
-        {
-            uart.send(byte);
-        }
-    }
+        /** Printf wrapper to emit logs 
+         * @param[in] fmt string  with printf fmt
+         */
+        static void log(const char * fmt, ...);
 
-    return 0;
+        /** Printf wrapper to emit logs with fmt sting in PROGMEM flash
+         * @param[in] fmt string CONSTANT with printf fmt
+         */
+        static void logP(const char * fmt, ...);
+    };
 }
+
+#else //defined(WITH_DEBUG) 
+
+#define DEBUG_INIT() true
+#define DEBUG_LOG(fmt, ...) 
+#define DEBUG_LOGP(fmt, ...) 
+#endif //defined(WITH_DEBUG) 
+
+#endif //DEBUG_H_INCLUDED

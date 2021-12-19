@@ -278,19 +278,14 @@ namespace hal
 
     Uart::RetVal Uart::send(uint8_t byte)
     {
-        if (!m_isOpen)
-        {
-            return RET_NOTOPEN;
-        }
-
-        if ((m_cfg.m_mode != MODE_WRITE) && (m_cfg.m_mode != MODE_READWRITE))
+        if (!canWrite())
         {
             return RET_INVMODE;
         }
 
         if (!m_cfg.m_outputQ->put(byte))
         {
-                return RET_NOSPACE;
+            return RET_NOSPACE;
         }
 
         /* if transmit interrupt is not enabled, we have no ongoing
@@ -309,12 +304,7 @@ namespace hal
 
     Uart::RetVal Uart::sendP(const uint8_t buffer[] , uint8_t len)
     {
-        if (!m_isOpen)
-        {
-            return RET_NOTOPEN;
-        }
-
-        if ((m_cfg.m_mode != MODE_WRITE) && (m_cfg.m_mode != MODE_READWRITE))
+        if (!canWrite())
         {
             return RET_INVMODE;
         }
@@ -328,7 +318,7 @@ namespace hal
     }
 
 
-    Uart::RetVal Uart::read(uint8_t& byte)
+    Uart::RetVal Uart::receive(uint8_t& byte)
     {
         if (!m_isOpen)
         {
