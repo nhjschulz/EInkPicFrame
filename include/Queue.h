@@ -29,6 +29,11 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+
+#ifndef QUEUE_H_INCLUDED
+#define QUEUE_H_INCLUDED
+
 #include <stdint.h>
 
 /** Implementation of a fixed size queue elements of type "T".
@@ -177,3 +182,5 @@ inline bool Queue<T>::get(T& element)
 /** A byte queue typedef to avoid ugly template syntax
  */
 typedef Queue<uint8_t> ByteQueue;
+
+#endif // QUEUE_H_INCLUDED
