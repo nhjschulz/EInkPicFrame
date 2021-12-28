@@ -32,7 +32,10 @@
  */
 
 #include "Spi.h"
+
+#include "service/Debug/Debug.h"
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 
 /*******************************************************************************
     Module statics
@@ -41,10 +44,6 @@
 /** Block until current byte transmissing completes.
  */
 static inline void waitTXcomplete();
-
-/** dummy slave select function without side effect
- */
-static void dummySlaveSelect(bool select);
 
 /*******************************************************************************
     Implementation
@@ -55,7 +54,7 @@ namespace hal
 
     void Spi::hardwareInit()
     {
-        m_slaveSelect = dummySlaveSelect;
+        m_slaveSelect = nullptr;
 
         /* initial pin setup before enabling SPI in MASTER mode
          */ 
@@ -64,14 +63,26 @@ namespace hal
         DDRB &= ~_BV(PB4);         // MISO is input
         PORTB |= _BV(PB4);         // MISO pulled high
 
-        SPCR |= _BV(SPR1) |        // div 64 (slow for breadboard)
+        SPCR |= /*_BV(SPR1) |  */      // div 64 (slow for breadboard)
                 _BV(MSTR) |        // MCU is SPI master
                 _BV(SPE);          // turn on SPI
     }
 
-    void Spi::configure(Spi::Mode mode, Spi::SlaveSelect slaveSelect)
+    void Spi::configure(
+            Spi::Mode mode,
+            Spi::ByteOrder order,
+            Spi::SlaveSelect slaveSelect)
     {
         uint8_t localSPCR(SPCR);
+
+        if (BYTEORDER_MSB == order)
+        {
+            localSPCR &= ~_BV(1<<DORD);
+        }
+        else
+        {
+            localSPCR |= _BV(1<<DORD);
+        }
 
         switch(mode)
         {
@@ -101,55 +112,90 @@ namespace hal
 
     void Spi::read(uint8_t buffer[], uint16_t size)
     {
-        m_slaveSelect(true);
+        if (nullptr != m_slaveSelect) 
+        {
+            m_slaveSelect(true);
+        }
 
-        for (uint16_t idx(0); 0u != size; --size)
+        for (uint16_t idx(0u); 0u != size; --size)
         {
             SPDR = 0x00;            // dummy write to generate SPI clocks
             waitTXcomplete();
             buffer[idx++] = SPDR;   // store result
         }
 
-        m_slaveSelect(false);
-    }
+        if (nullptr != m_slaveSelect) 
+        {
+            m_slaveSelect(false);
+        }    }
 
     void Spi::write(const uint8_t buffer[], uint16_t size)
     {
-        m_slaveSelect(true);
+        if (nullptr != m_slaveSelect) 
+        {
+            m_slaveSelect(true);
+        }
 
-        for (uint16_t idx(0); 0u != size; --size)
+        for (uint16_t idx(0u); 0u != size; --size)
         {
             SPDR = buffer[idx++];    // send next byte
             waitTXcomplete();
         }
 
-        m_slaveSelect(false);
+        if (nullptr != m_slaveSelect) 
+        {
+            m_slaveSelect(false);
+        }
+    }
+
+    void Spi::write_P(const uint8_t buffer[], uint16_t size)
+    {
+        if (nullptr != m_slaveSelect) 
+        {
+            m_slaveSelect(true);
+        }
+
+        uint16_t idx(0u);
+        while (0u != size)
+        {
+            uint8_t val(pgm_read_byte(&(buffer[idx])));
+            SPDR = val;    // send next byte
+            ++idx;
+            --size;
+            waitTXcomplete();
+        }
+
+        if (nullptr != m_slaveSelect) 
+        {
+            m_slaveSelect(false);
+        }
     }
 
     void Spi::exchange(uint8_t buffer[], uint16_t size)
     {
-        m_slaveSelect(true);
+        if (nullptr != m_slaveSelect) 
+        {
+            m_slaveSelect(true);
+        }
 
-        for (uint16_t idx(0); 0u != size; --size)
+        for (uint16_t idx(0u); 0u != size; --size)
         {
             SPDR = buffer[idx];    // send next byte
             waitTXcomplete();
             buffer[idx++] = SPDR;  // replace with received one
         }
 
-        m_slaveSelect(false);
+        if (nullptr != m_slaveSelect) 
+        {
+            m_slaveSelect(false);
+        }
     }
 }
 
 static inline void waitTXcomplete()
 {
-    while (0 == (SPSR & _BV(SPIF)))
+    while (0u == (SPSR & _BV(SPIF)))
     {
 
     }
-}
-
-static void dummySlaveSelect(bool select)
-{
-    (void) select;
 }

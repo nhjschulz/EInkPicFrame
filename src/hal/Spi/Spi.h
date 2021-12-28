@@ -60,15 +60,22 @@ namespace hal
                 MODE_3  /**< CPOL=1, CPHA=1 Setup (Falling) Sample (Rising) */
             };
 
+            enum ByteOrder
+            {
+                BYTEORDER_MSB,   /**< MSB first */
+                BYTEORDER_LSB    /**< LSB first */
+            };
+
             /** Initialize SPI hardware
              */
             static void hardwareInit();
 
             /** Configure SPI transfers
              *  @param[in] mode tansfer mode @see enum Mode
+             *  @param[in] order bit order in transmits
              *  @param[in] slaveSelect slave select/deselect function
              */
-            static void configure(Mode mode, SlaveSelect slaveSelect);
+            static void configure(Mode mode, ByteOrder order, SlaveSelect slaveSelect);
 
             /** Read bytes from SPI (by sending zeros)
              *  @param[out] buffer received data
@@ -81,6 +88,12 @@ namespace hal
              *  @param[in] size number of bytes to store in buffer
              */
             static void write(const uint8_t buffer[], uint16_t size);
+
+            /** Write bytes to SPI from program space (ignoring received data)
+             *  @param[out] buffer received data
+             *  @param[in] size number of bytes to store in buffer
+             */
+            static void write_P(const uint8_t buffer[], uint16_t size);
 
             /** Exchange bytes over SPI
              * 
