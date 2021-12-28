@@ -33,13 +33,15 @@
 #ifndef DEBUG_H_INCLUDED
 #define DEBUG_H_INCLUDED
 
+#include <avr/pgmspace.h>
+
 /** Debugging support (enabled with -D WITH_DEBUG) */
 
 #if defined(WITH_DEBUG)
 
 #define DEBUG_INIT()         service::Debug::init()
-#define DEBUG_LOG(fmt, ...)  service::Debug::log(fmt, __VA_ARGS__)
-#define DEBUG_LOGP(fmt, ...) service::Debug::logP(PSTR(fmt), __VA_ARGS__)
+#define DEBUG_LOG(fmt, ...)  service::Debug::log(fmt, ##__VA_ARGS__)
+#define DEBUG_LOGP(fmt, ...) service::Debug::logP(PSTR(fmt), ##__VA_ARGS__)
 
 namespace service
 {
