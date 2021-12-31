@@ -66,9 +66,13 @@ namespace hal
                 BYTEORDER_LSB    /**< LSB first */
             };
 
-            /** Initialize SPI hardware
+            /** Enable SPI hardware
              */
-            static void hardwareInit();
+            static void enable();
+
+            /** Disable SPI hardware
+             */
+            static void disable();
 
             /** Configure SPI transfers
              *  @param[in] mode tansfer mode @see enum Mode

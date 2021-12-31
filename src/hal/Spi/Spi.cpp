@@ -52,7 +52,7 @@ namespace hal
 {
     Spi::SlaveSelect Spi::m_slaveSelect;
 
-    void Spi::hardwareInit()
+    void Spi::enable()
     {
         m_slaveSelect = nullptr;
 
@@ -66,6 +66,11 @@ namespace hal
         SPCR |= /*_BV(SPR1) |  */      // div 64 (slow for breadboard)
                 _BV(MSTR) |        // MCU is SPI master
                 _BV(SPE);          // turn on SPI
+    }
+
+    void Spi::disable()
+    {
+        SPCR &= ~_BV(SPE);
     }
 
     void Spi::configure(
@@ -105,8 +110,11 @@ namespace hal
                 break;
         }
         
-        SPCR = localSPCR;
-
+        if (SPCR != localSPCR)
+        {
+            SPCR = localSPCR;
+        }
+        
         m_slaveSelect = slaveSelect;
     }
 

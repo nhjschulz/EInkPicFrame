@@ -25,9 +25,6 @@
 #define	CS_HIGH()	PORTD |= _BV(PD4)			/* CS=high */
 #define MMC_CD		(true)						/* Card detected.   yes:true, no:false, default:true */
 #define MMC_WP		(true)		/* Write protected. yes:true, no:false, default:false */
-#define	FCLK_SLOW()	SPCR = 0x52		/* Set slow clock (F_CPU / 64) */
-#define	FCLK_FAST()	SPCR = 0x50		/* Set fast clock (F_CPU / 2) */
-
 
 /*--------------------------------------------------------------------------
 
@@ -89,9 +86,6 @@ void power_on (void)
 
 	PORTB |= 0b00000101;	/* Configure SCK/MOSI/CS as output */
 	DDRB  |= 0b00000111;
-
-	SPCR = 0x52;			/* Enable SPI function in mode 0 */
-	SPSR = 0x01;			/* SPI 2x mode */
 #endif
 }
 
@@ -99,12 +93,6 @@ static
 void power_off (void)
 {
 #if 0
-	SPCR = 0;				/* Disable SPI function */
-
-	DDRB  &= ~0b00110111;	/* Set SCK/MOSI/CS as hi-z, INS#/WP as pull-up */
-	PORTB &= ~0b00000111;
-	PORTB |=  0b00110000;
-
 	{	/* Remove this block if no socket power control */
 		PORTE |= _BV(7);		/* Socket power off (PE7=high) */
 		for (Timer1 = 20; Timer1; );	/* Wait for 20ms */
@@ -312,7 +300,8 @@ DSTATUS disk_initialize (
 	power_off();						/* Turn off the socket power to reset the card */
 	if (Stat & STA_NODISK) return Stat;	/* No card in the socket */
 	power_on();							/* Turn on the socket power */
-	FCLK_SLOW();
+	hal::Spi::configure(hal::Spi::MODE_0, hal::Spi::BYTEORDER_MSB, nullptr);
+
 	for (n = 10; n; n--) xchg_spi(0xFF);	/* 80 dummy clocks */
 
 	ty = 0;
@@ -343,7 +332,6 @@ DSTATUS disk_initialize (
 
 	if (ty) {			/* Initialization succeded */
 		Stat &= ~STA_NOINIT;		/* Clear STA_NOINIT */
-		FCLK_FAST();
 	} else {			/* Initialization failed */
 		power_off();
 	}
@@ -384,6 +372,8 @@ DRESULT disk_read (
 	if (pdrv || !count) return RES_PARERR;
 	if (Stat & STA_NOINIT) return RES_NOTRDY;
 
+	hal::Spi::configure(hal::Spi::MODE_0, hal::Spi::BYTEORDER_MSB, nullptr);
+
 	if (!(CardType & CT_BLOCK)) sector *= 512;	/* Convert to byte address if needed */
 
 	cmd = count > 1 ? CMD18 : CMD17;			/*  READ_MULTIPLE_BLOCK : READ_SINGLE_BLOCK */
@@ -416,6 +406,8 @@ DRESULT disk_write (
 	if (pdrv || !count) return RES_PARERR;
 	if (Stat & STA_NOINIT) return RES_NOTRDY;
 	if (Stat & STA_PROTECT) return RES_WRPRT;
+
+	hal::Spi::configure(hal::Spi::MODE_0, hal::Spi::BYTEORDER_MSB, nullptr);
 
 	if (!(CardType & CT_BLOCK)) sector *= 512;	/* Convert to byte address if needed */
 
@@ -463,6 +455,8 @@ DRESULT disk_ioctl (
 	res = RES_ERROR;
 
 	if (Stat & STA_NOINIT) return RES_NOTRDY;
+
+	hal::Spi::configure(hal::Spi::MODE_0, hal::Spi::BYTEORDER_MSB, nullptr);
 
 	switch (cmd) {
 	case CTRL_SYNC :		/* Make sure that no pending write process. Do not remove this or written sector might not left updated. */

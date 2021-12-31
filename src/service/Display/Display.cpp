@@ -181,7 +181,7 @@ namespace service
         // set input IO pins (only busy)
         DDRD &= ~_BV(PIN_BUSY);
 
-        hal::Spi::configure(hal::Spi::MODE_0, hal::Spi::BYTEORDER_MSB, slaveSelect);
+        configureSpi();
 
         reset();
         waitForIdle(); 
@@ -228,8 +228,15 @@ namespace service
         while(GET_BUSY());
     }
 
+    void Epd::configureSpi()
+    {
+        hal::Spi::configure(hal::Spi::MODE_0, hal::Spi::BYTEORDER_MSB, slaveSelect);
+    } 
+
     void Epd::beginPaint()
     {
+        configureSpi();
+
         sendCmd_P(R61_cmdTRES, sizeof(R61_cmdTRES));
         sendCmd_P(R10_cmdDTM1, sizeof(R10_cmdDTM1));
         DC_HIGH();
@@ -237,11 +244,15 @@ namespace service
 
     void Epd::sendBlock(const uint8_t * block, uint8_t size)
     {
+        configureSpi();
+
         hal::Spi::write(block, size);
     }
 
     void Epd::endPaint()
     {
+        configureSpi();
+
         sendCmd_P(R04_cmdPON, sizeof(R04_cmdPON)); // power on
         waitForIdle();
 
@@ -254,6 +265,8 @@ namespace service
 
     void Epd::reset(void)
     {
+        configureSpi();
+
         RST_LOW();                // low = module reset    
         _delay_ms(1);
 
@@ -263,6 +276,8 @@ namespace service
 
     void Epd::clear(Epd::Color color)
     {
+        configureSpi();
+
         const uint8_t twoPixel((color<<4)|color);
 
         uint16_t width(getWidth() >> 1u);
@@ -283,6 +298,8 @@ namespace service
 
     void Epd::sleep(void)
     {
+        configureSpi();
+        
         _delay_ms(100);
 
         sendCmd_P(R07_cmdDSLP, sizeof(R07_cmdDSLP));

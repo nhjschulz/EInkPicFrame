@@ -114,11 +114,15 @@ namespace service
          */
         static void waitForBusy(void);
 
-        /** Sewnd command from program space
+        /** Send command from program space
          * @param cmd pointer to command byte + cmd data bytes (if any)
          * @param size number of bytes used by this commmand
          */
         static void sendCmd_P(const uint8_t * cmd, uint8_t size);
+
+        /** Configure SPI for display usage
+         */
+        static void configureSpi();
     };
 }
 #endif /* DISPLAY_H_INCLUDED */
