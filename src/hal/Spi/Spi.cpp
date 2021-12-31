@@ -119,7 +119,7 @@ namespace hal
 
         for (uint16_t idx(0u); 0u != size; --size)
         {
-            SPDR = 0x00;            // dummy write to generate SPI clocks
+            SPDR = 0xFF;            // dummy write to generate SPI clocks
             waitTXcomplete();
             buffer[idx++] = SPDR;   // store result
         }
