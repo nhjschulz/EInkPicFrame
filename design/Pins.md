@@ -16,8 +16,8 @@ The page lists the used pin assignment to/from the microcontroller.
 | 8| GND  | Power             | GND                  |
 | 9| PB6  | NC                |                      |
 |10| PB7  | NC                |                      |
-|11| PD5  | NC                |                      |
-|12| PD6  | NC                |                      |
+|11| PD5  | SDCARD Mosfet     | output               |
+|12| PD6  | Display Mosfet    | output               |
 |13| PD7  | Display BUSY      | input                |
 |14| PB0  | Display RESET     | output               |
 |15| PB1  | Display DC        | output               |
