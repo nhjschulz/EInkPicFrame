@@ -8,7 +8,7 @@ package app {
     }
     interface AbstractState {
         {abstract}+AbstractState(StateHandler&)
-        {abstract} +cylce()
+        {abstract} +do()
         {abstract} +enter()
         {abstract} +leave()
     }
@@ -16,10 +16,13 @@ package app {
         class SleepState
         class UpdateState
         class InitState
+        class ErrorState
 
         UpdateState -u-|> AbstractState
         SleepState -u-|> AbstractState
         InitState -u-|> AbstractState
+        ErrorState -u-|> AbstractState
+
     }
 
     Main -> StateHandler
@@ -64,6 +67,10 @@ package Hal {
         +set(id, bool state)
     }
 
+    class TickTimer {
+
+    }
+
 
 }
 
@@ -83,5 +90,5 @@ Display --> Spi
 SDCard --> Power
 Display --> Power
 Sleep --> Power
-
+FatFS --> TickTimer
 @enduml

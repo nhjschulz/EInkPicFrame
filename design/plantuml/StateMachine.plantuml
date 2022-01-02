@@ -1,0 +1,26 @@
+@startuml
+
+[*] --> Init : Power On
+Init -->  Update
+
+Update -> Sleep : Update done
+Sleep -l> Update : Wakeup time passed
+
+Update -d-> Error : Error occured
+Sleep -d-> Error : Error occured
+
+Error -> [*]
+
+Init: /enter initSystem()
+Init: /do setState(Update)
+
+Error: /enter DisplayErrImage()
+Error: /do halt()
+
+Update: /do displayNextImage()
+
+Sleep: /enter suspendDevices()
+Sleep: /do sleep( Wakeup time period)
+Sleep: /leave resumeDevices()
+
+@enduml

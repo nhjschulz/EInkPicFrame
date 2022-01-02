@@ -7,7 +7,7 @@ node EInkFrame {
 
     node MainBoard as BOARD {
         node AVR328P  as UC  << uc >>{
-            file firmware
+            file Software
         }
 
         node LED as LED
