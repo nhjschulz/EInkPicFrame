@@ -1,4 +1,4 @@
-@startuml
+@startuml StateMachine
 
 [*] --> Init : Power On
 Init -->  Update
@@ -12,15 +12,15 @@ Sleep -d-> Error : Error occured
 Error -> [*]
 
 Init: /enter initSystem()
-Init: /do setState(Update)
+Init: /process setState(Update)
 
 Error: /enter DisplayErrImage()
-Error: /do halt()
+Error: /process halt()
 
-Update: /do displayNextImage()
+Update: /process displayNextImage()
 
 Sleep: /enter suspendDevices()
-Sleep: /do sleep( Wakeup time period)
+Sleep: /process sleep( Wakeup time period)
 Sleep: /leave resumeDevices()
 
 @enduml

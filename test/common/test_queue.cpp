@@ -35,6 +35,7 @@
 
 #include <unity.h>
 #include "Queue.h"
+
 void test_queue_generic(void) 
 {
     uint8_t buf[11];
@@ -103,17 +104,5 @@ void test_queue_1_element(void)
     TEST_ASSERT_EQUAL(true, singleByteQueue.get(expect_16));
     TEST_ASSERT_EQUAL(16u, expect_16);
     TEST_ASSERT_EQUAL(false, singleByteQueue.get(expect_16)); // empty 
-
 }    
-    
-int main(int argc, char **argv)
- {
-    UNITY_BEGIN();
 
-    RUN_TEST(test_queue_generic);
-    RUN_TEST(test_queue_1_element);
-    
-    UNITY_END();
-
-    return 0;
-}

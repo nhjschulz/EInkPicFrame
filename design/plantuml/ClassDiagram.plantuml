@@ -8,8 +8,8 @@ package app {
     }
     interface AbstractState {
         {abstract}+AbstractState(StateHandler&)
-        {abstract} +do()
         {abstract} +enter()
+        {abstract} +process()
         {abstract} +leave()
     }
     package States {
@@ -31,7 +31,7 @@ package app {
 
 package Service {
     class FileIO {
-        +enble(bool)
+        +enable(bool)
     }
     class FatFS
     class ServiceInit {
