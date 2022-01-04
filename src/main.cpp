@@ -30,64 +30,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
+#include "app/StateHandler.h"
+#include "app/InitState.h"
 
-#include <avr/io.h>
-#include <util/delay.h>
-
-#include "hal/Uart/Uart.h"
-#include <avr/pgmspace.h>
-#include <avr/interrupt.h>
-
-#include "service/Debug/Debug.h"
-
-uint8_t sendBuff[40]; 
-ByteQueue uartSendQ(sendBuff, sizeof(sendBuff));
-
-uint8_t readBuff[16u]; 
-Queue<uint8_t> uartReadQ(readBuff, sizeof(readBuff));
+/** State machine object 
+ * 
+ * Initial state is the InitState instance.
+ */
+static app::StateHandler stateHandler(app::InitState::instance());
 
 int main(int argc, char** argv)
 {
-
     (void)argc;
     (void)argv;
 
-    hal::Uart::Cfg cfg;
-
-    cfg.m_baudRate = hal::Uart::BAUD_9600;
-    cfg.m_mode = hal::Uart::MODE_READWRITE;
-    cfg.m_parity = hal::Uart::PARITY_NONE;
-    cfg.m_stopBits = hal::Uart::STOPBIT_1;
-    cfg.m_inputQ = &uartReadQ;
-    cfg.m_outputQ = &uartSendQ;
-
-    hal::Uart& uart(hal::Uart::get());
-
-    uart.open(cfg);
-    DEBUG_INIT();
-
-    // pin used for LED debug temporary 
-    DDRB |= (1<<PB0);
-    PORTB &= ~(1<<PB0);
-//    PORTB |= (1<<PB0);
-
-
-    sei();
-
-    DEBUG_LOGP("EInkPicFrame V%d.%d\r\n", 0, 1);
-
+    /* run state machine forever  */
     for(;;)
     {
-
-        uint8_t byte(0);
-
-        // local echo over UART test
-        //
-        if (hal::Uart::RET_SUCCESS == uart.receive(byte))
-        {
-            uart.send(byte);
-        }
+        stateHandler.process();
     }
 
     return 0;

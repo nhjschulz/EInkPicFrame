@@ -33,7 +33,7 @@
 #ifndef BASESTATE_H_INCLUDED
 #define BASESTATE_H_INCLUDED
 
-#include "app/IState.h"
+#include "app/StateHandler.h"
 
 namespace app
 {
@@ -44,7 +44,11 @@ namespace app
     {
         public:
             virtual void enter()   {}
-            virtual void process() {}
+            virtual void process(StateHandler& stateHandler)
+            {
+                (void)stateHandler;
+            }
+            
             virtual void leave()   {}
     };
 }

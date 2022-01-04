@@ -66,6 +66,10 @@ namespace hal
                 BYTEORDER_LSB    /**< LSB first */
             };
 
+            /** Initialize SPI hardware
+             */
+            static void init();
+            
             /** Enable SPI hardware
              */
             static void enable();

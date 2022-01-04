@@ -1,4 +1,7 @@
-/* Copyright (c) 2022, Norbert Schulz
+/*
+ * BSD 3-Clause License
+ * 
+ * Copyright (c) 2022, Norbert Schulz
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +30,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "app/StateHandler.h"
+#include "app/SleepState.h"
+#include "service/Debug/Debug.h"
 
 namespace app
 {
-    StateHandler::StateHandler(IState& initialState) :
-        m_currentState(nullptr),
-        m_pendingState(&initialState)
-    { 
+    static SleepState sleepState;
+
+    SleepState& SleepState::instance()
+    {
+        return sleepState;
     }
 
-    void StateHandler::process()
+    void SleepState::enter(void)
     {
-        /* Check for pending state transition
-         */
-        if (m_currentState != m_pendingState)
-        {
-            if (nullptr != m_currentState)
-            {
-                m_currentState->leave();
-            }
+       
+    }
+    
+    void SleepState::process(StateHandler& stateHandler)
+    {
+       (void)stateHandler;
+       
+        DEBUG_LOGP("Sleep()\r\n");
+        for(;;)
+        {}
 
-            if (nullptr != m_pendingState)
-            {
-                m_pendingState->enter();
-            }
+    }
 
-            m_currentState = m_pendingState;
-        }
-
-        if (nullptr != m_currentState)
-        {
-            m_currentState->process(*this);
-        }
+    void SleepState::leave(void)
+    {
+       
     }
 }

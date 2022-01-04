@@ -1,4 +1,7 @@
-/* Copyright (c) 2022, Norbert Schulz
+/*
+ * BSD 3-Clause License
+ * 
+ * Copyright (c) 2022, Norbert Schulz
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +30,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "app/StateHandler.h"
+#include "hal/Cpu.h"
+#include "hal/HalInit.h"
+#include "hal/Spi/Spi.h"
+#include "hal/Timer/TickTimer.h"
 
-namespace app
+#include "service/Display/Display.h"
+#include "service/Debug/Debug.h"
+
+extern "C" void disk_timerproc (void);
+
+namespace service
 {
-    StateHandler::StateHandler(IState& initialState) :
-        m_currentState(nullptr),
-        m_pendingState(&initialState)
-    { 
-    }
-
-    void StateHandler::process()
+    void init(void)
     {
-        /* Check for pending state transition
-         */
-        if (m_currentState != m_pendingState)
-        {
-            if (nullptr != m_currentState)
-            {
-                m_currentState->leave();
-            }
+        hal::init();
 
-            if (nullptr != m_pendingState)
-            {
-                m_pendingState->enter();
-            }
+        hal::Spi::init();
+        hal::Spi::enable();
 
-            m_currentState = m_pendingState;
-        }
+        hal::TickTimer::init();
+ 
+        service::Epd::init();
+ 
+        hal::TickTimer::enable(disk_timerproc);
 
-        if (nullptr != m_currentState)
-        {
-            m_currentState->process(*this);
-        }
+        DEBUG_INIT();
+
+        hal::irqEnable();
     }
 }

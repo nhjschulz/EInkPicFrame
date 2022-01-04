@@ -46,6 +46,13 @@
 /** FILE stream to UART */
 static FILE uartFileStream; 
 
+
+static uint8_t sendBuff[120]; 
+static ByteQueue uartSendQ(sendBuff, sizeof(sendBuff));
+
+static uint8_t readBuff[16u]; 
+static Queue<uint8_t> uartReadQ(readBuff, sizeof(readBuff));
+
 /*******************************************************************************
     Module statics
 *******************************************************************************/
@@ -63,7 +70,20 @@ namespace service
     {
         bool result(false);
 
-        if (hal::Uart::get().canWrite())
+        hal::Uart::Cfg cfg;
+
+        cfg.m_baudRate = hal::Uart::BAUD_9600;
+        cfg.m_mode = hal::Uart::MODE_READWRITE;
+        cfg.m_parity = hal::Uart::PARITY_NONE;
+        cfg.m_stopBits = hal::Uart::STOPBIT_1;
+        cfg.m_inputQ = &uartReadQ;
+        cfg.m_outputQ = &uartSendQ;
+
+        hal::Uart& uart(hal::Uart::get());
+
+        uart.open(cfg);
+
+        if (uart.canWrite())
         {
             uartFileStream.put = uartPutChar;
             uartFileStream.get = nullptr;

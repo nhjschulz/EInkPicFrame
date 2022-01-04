@@ -9,8 +9,8 @@ The page lists the used pin assignment to/from the microcontroller.
 | 1| PC6  |  /Reset           | input, pullup        |
 | 2| PD0  | UART RX           | UART controlled      |
 | 3| PD1  | UART TX           | UART controlled      |
-| 4| PD2  | NC                |                      |
-| 5| PD3  | NC                |                      |
+| 4| PD2  | Led               | output               |
+| 5| PD3  | Trigger debug Pin | output               |
 | 6| PD4  | SDCARD CS         | output               |
 | 7| VCC  | Power             | VCC                  |
 | 8| GND  | Power             | GND                  |

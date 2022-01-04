@@ -1,4 +1,7 @@
-/* Copyright (c) 2022, Norbert Schulz
+/*
+ * BSD 3-Clause License
+ * 
+ * Copyright (c) 2022, Norbert Schulz
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +30,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "app/StateHandler.h"
+#ifndef HALINIT_H_INCLUDED
+#define HALINIT_H_INCLUDED
 
-namespace app
+namespace hal
 {
-    StateHandler::StateHandler(IState& initialState) :
-        m_currentState(nullptr),
-        m_pendingState(&initialState)
-    { 
-    }
-
-    void StateHandler::process()
-    {
-        /* Check for pending state transition
-         */
-        if (m_currentState != m_pendingState)
-        {
-            if (nullptr != m_currentState)
-            {
-                m_currentState->leave();
-            }
-
-            if (nullptr != m_pendingState)
-            {
-                m_pendingState->enter();
-            }
-
-            m_currentState = m_pendingState;
-        }
-
-        if (nullptr != m_currentState)
-        {
-            m_currentState->process(*this);
-        }
-    }
+    /**
+     * @brief layer initialisation
+     * 
+     * Called after boot to bring hardware in defined start state
+     * 
+     */
+    extern void init(void);
 }
+
+#endif /* SERVICEINIT_H_INCLUDED */

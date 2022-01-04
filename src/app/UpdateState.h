@@ -1,4 +1,7 @@
-/* Copyright (c) 2022, Norbert Schulz
+/*
+ * BSD 3-Clause License
+ * 
+ * Copyright (c) 2022, Norbert Schulz
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +30,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "app/StateHandler.h"
+#ifndef UPDATESTATE_H_INCLUDED
+#define UPDATESTATE_H_INCLUDED
+
+#include "app/BaseState.h"
 
 namespace app
 {
-    StateHandler::StateHandler(IState& initialState) :
-        m_currentState(nullptr),
-        m_pendingState(&initialState)
-    { 
-    }
-
-    void StateHandler::process()
+    /**
+     * @brief Image update processing
+     * 
+     */
+    class UpdateState : public BaseState
     {
-        /* Check for pending state transition
-         */
-        if (m_currentState != m_pendingState)
-        {
-            if (nullptr != m_currentState)
-            {
-                m_currentState->leave();
-            }
+        public:
+        static UpdateState& instance();
 
-            if (nullptr != m_pendingState)
-            {
-                m_pendingState->enter();
-            }
-
-            m_currentState = m_pendingState;
-        }
-
-        if (nullptr != m_currentState)
-        {
-            m_currentState->process(*this);
-        }
-    }
+        public:
+            virtual void process(StateHandler& stateHandler);
+    };
 }
+
+#endif /* UPDATESTATE_H_INCLUDED */

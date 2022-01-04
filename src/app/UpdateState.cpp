@@ -1,4 +1,7 @@
-/* Copyright (c) 2022, Norbert Schulz
+/*
+ * BSD 3-Clause License
+ * 
+ * Copyright (c) 2022, Norbert Schulz
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +30,64 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "app/StateHandler.h"
+#include "app/UpdateState.h"
+
+#include "service/Display/Display.h"
+#include "service/FatFS/source/ff.h"
+#include "service/Debug/Debug.h"
+#include "app/ErrorState.h"
+#include "app/SleepState.h"
 
 namespace app
 {
-    StateHandler::StateHandler(IState& initialState) :
-        m_currentState(nullptr),
-        m_pendingState(&initialState)
-    { 
+    static UpdateState updateState;
+
+    static FIL fil;
+    FATFS fs;
+
+    static uint8_t iobuf[100];
+
+    UpdateState& UpdateState::instance()
+    {
+        return updateState;
     }
 
-    void StateHandler::process()
+    void UpdateState::process(StateHandler& stateHandler)
     {
-        /* Check for pending state transition
-         */
-        if (m_currentState != m_pendingState)
+        FRESULT res;
+
+        DEBUG_LOGP("UpdateState::process");
+
+        res = f_mount(&fs, "", 1);
+        if (res != FR_OK)
         {
-            if (nullptr != m_currentState)
-            {
-                m_currentState->leave();
-            }
-
-            if (nullptr != m_pendingState)
-            {
-                m_pendingState->enter();
-            }
-
-            m_currentState = m_pendingState;
+            DEBUG_LOGP("f_mount returned %02x\r\n", res);
+            stateHandler.setState(ErrorState::instance());
+            return;
         }
+            
+        service::Epd::clear(service::Epd::CLEAN);
 
-        if (nullptr != m_currentState)
+        res = f_open(&fil, "P4063214.EPD", FA_READ);
+
+        DEBUG_LOGP("f_open->%d\r\n", res);
+        if (FR_OK == res)
         {
-            m_currentState->process(*this);
+            UINT read = 0;
+
+            service::Epd::beginPaint();
+            do {
+                res = f_read(&fil, iobuf, sizeof(iobuf), &read);
+                if (0u != read)
+                {
+                    service::Epd::sendBlock(iobuf, read);
+                }
+            } while(0u != read);
+
+            service::Epd::endPaint();
         }
+        service::Epd::sleep();
+        DEBUG_LOGP("displyDrv.Sleep() done\r\n");
+        stateHandler.setState(SleepState::instance());
     }
 }

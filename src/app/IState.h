@@ -35,13 +35,15 @@
 
 namespace app
 {
+    class StateHandler;
+
     /** Abstract State Interface 
      */
     class IState
     {
         public:
             virtual void enter() = 0;    /**< enter state handler  */
-            virtual void process() = 0;  /**< proces cycle handler */
+            virtual void process(StateHandler& stateHandler) = 0;  /**< proces cycle handler */
             virtual void leave() = 0;    /**< leave state handler  */
     };
 }

@@ -52,25 +52,27 @@ namespace hal
 {
     Spi::SlaveSelect Spi::m_slaveSelect;
 
-    void Spi::enable()
+    void Spi::init()
     {
-        m_slaveSelect = nullptr;
-
         /* initial pin setup before enabling SPI in MASTER mode
          */ 
         DDRB |=  _BV(PB5) | _BV(PB3) | _BV(PB2); // SCK and MOSI ,SS as output
 
-        DDRB &= ~_BV(PB4);         // MISO is input
-        PORTB |= _BV(PB4);         // MISO pulled high
+        DDRB &= ~_BV(PB4);         /* MISO is input     */
+        PORTB |= _BV(PB4);         /* MISO pulled high  */
+    }
+    
+    void Spi::enable()
+    {
+        m_slaveSelect = nullptr;
 
-        SPCR |= /*_BV(SPR1) |  */      // div 64 (slow for breadboard)
-                _BV(MSTR) |        // MCU is SPI master
-                _BV(SPE);          // turn on SPI
+        SPCR =  _BV(MSTR) |        /*  MCU is SPI master  */
+                _BV(SPE);          /* turn on SPI         */
     }
 
     void Spi::disable()
     {
-        SPCR &= ~_BV(SPE);
+        SPCR &= ~_BV(SPE);         /* turn off SPI         */
     }
 
     void Spi::configure(

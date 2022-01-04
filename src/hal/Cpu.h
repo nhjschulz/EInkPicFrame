@@ -1,4 +1,7 @@
-/* Copyright (c) 2022, Norbert Schulz
+/*
+ * BSD 3-Clause License
+ * 
+ * Copyright (c) 2022, Norbert Schulz
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +30,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "app/StateHandler.h"
+#ifndef CPU_H_INCLUDED
+#define CPU_H_INCLUDED
 
-namespace app
+#include <avr/interrupt.h>
+#include <util/delay.h>
+
+namespace hal
 {
-    StateHandler::StateHandler(IState& initialState) :
-        m_currentState(nullptr),
-        m_pendingState(&initialState)
+    /**
+     * @brief disable all interrupts
+     * 
+     */
+    inline void irqDisable() 
     { 
+        cli();
     }
 
-    void StateHandler::process()
+    /**
+     * @brief enable all interrupts
+     * 
+     */
+    inline void irqEnable()
     {
-        /* Check for pending state transition
-         */
-        if (m_currentState != m_pendingState)
-        {
-            if (nullptr != m_currentState)
-            {
-                m_currentState->leave();
-            }
+        sei();
+    }
 
-            if (nullptr != m_pendingState)
-            {
-                m_pendingState->enter();
-            }
-
-            m_currentState = m_pendingState;
-        }
-
-        if (nullptr != m_currentState)
-        {
-            m_currentState->process(*this);
-        }
+    /**
+     * @brief busy wait
+     * 
+     * @param ms wait duration in ms
+     */
+    inline void delayMS(uint8_t ms)
+    {
+        _delay_ms(ms);
     }
 }
+#endif /* CPU_H_INCLUDED */
