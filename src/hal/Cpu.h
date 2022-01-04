@@ -35,6 +35,7 @@
 
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <avr/pgmspace.h>
 
 namespace hal
 {
@@ -61,7 +62,7 @@ namespace hal
      * 
      * @param ms wait duration in ms
      */
-    inline void delayMS(uint8_t ms)
+    inline void delayMS(uint16_t ms)
     {
         _delay_ms(ms);
     }
