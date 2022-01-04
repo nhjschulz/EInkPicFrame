@@ -63,7 +63,7 @@ package Hal {
         +enable(Device, bool)
         +sleep()
     }
-    class Led {
+    class Gpio {
         +set(id, bool state)
     }
 
@@ -84,7 +84,7 @@ FatFS --> SDCard
 FileIO --> SDCard
 
 Debug --> Uart
-Debug --> Led
+Debug --> Gpio
 SDCard --> Spi
 Display --> Spi
 SDCard --> Power
