@@ -72,7 +72,7 @@ if __name__ == "__main__":
     for infile in sys.argv[1:]:
         try:
             with Image.open(infile) as im:
-                if ((WIDTH != im.size[0]) and (HEIGHT != im.size[1])):
+                if ((WIDTH != im.size[0]) or (HEIGHT != im.size[1])):
                     print('{}: wrong image size {}'.format(infile, im.size))
                     continue
                 
