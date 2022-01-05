@@ -20,7 +20,7 @@
 
 /* Port controls  (Platform dependent) */
 #define CS_LOW()	hal::Gpio::clrSdCardCS()
-#define	CS_HIGH()	hal::Gpio::clrSdCardCS()
+#define	CS_HIGH()	hal::Gpio::setSdCardCS()
 #define MMC_CD		(true)						/* Card detected.   yes:true, no:false, default:true */
 #define MMC_WP		(true)		/* Write protected. yes:true, no:false, default:false */
 
@@ -85,8 +85,8 @@ void power_on (void)
 	PORTB |= 0b00000101;	/* Configure SCK/MOSI/CS as output */
 	DDRB  |= 0b00000111;
 #endif
-	hal::Gpio::clrSdCardPower();
-	for (Timer1 = 200; Timer1; );	/* Wait for 20ms */
+	hal::Gpio::setSdCardPower();
+	for (Timer1 = 20; Timer1; );	/* Wait for 20ms */
 }
 
 static

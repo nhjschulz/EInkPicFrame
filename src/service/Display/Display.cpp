@@ -40,7 +40,7 @@ namespace service
     /** Slave select function for SPI when talking to display
      * @see hal::SPi::configure
      */
-    static void slaveSelect(bool select)
+    static void dispSlaveSelect(bool select)
     {
         if (select)
         {
@@ -48,7 +48,7 @@ namespace service
         }
         else
         {
-            hal::Gpio::clrDispCS();
+            hal::Gpio::setDispCS();
         }
     }
 
@@ -176,7 +176,7 @@ namespace service
         /* cmd data bytes */
         if (1u < size)
         {
-            hal::Gpio::clrDispDC();  /* data bytes */
+            hal::Gpio::setDispDC();  /* data bytes */
             ++cmd; 
             --size;
             hal::Spi::write_P(cmd, size);
@@ -195,7 +195,7 @@ namespace service
 
     void Epd::configureSpi()
     {
-        hal::Spi::configure(hal::Spi::MODE_0, hal::Spi::BYTEORDER_MSB, slaveSelect);
+        hal::Spi::configure(hal::Spi::MODE_0, hal::Spi::BYTEORDER_MSB, dispSlaveSelect);
     } 
 
     void Epd::beginPaint()
@@ -204,7 +204,7 @@ namespace service
 
         sendCmd_P(R61_cmdTRES, sizeof(R61_cmdTRES));
         sendCmd_P(R10_cmdDTM1, sizeof(R10_cmdDTM1));
-        hal::Gpio::clrDispDC();
+        hal::Gpio::setDispDC();
     }
 
     void Epd::sendBlock(const uint8_t * block, uint8_t size)
@@ -235,7 +235,7 @@ namespace service
         hal::Gpio::clrDispReset();                // low = module reset    
         hal::Cpu::delayMS(1);
 
-        hal::Gpio::clrDispReset();
+        hal::Gpio::setDispReset();
         hal::Cpu::delayMS(200);    
     }
 
