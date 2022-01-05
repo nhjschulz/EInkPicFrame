@@ -30,7 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "hal/Cpu.h"
+#include "hal/Cpu/Cpu.h"
 #include "hal/HalInit.h"
 #include "hal/Spi/Spi.h"
 #include "hal/Timer/TickTimer.h"
@@ -57,6 +57,6 @@ namespace service
 
         DEBUG_INIT();
 
-        hal::irqEnable();
+        hal::Cpu::irqEnable();
     }
 }

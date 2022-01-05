@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  * 
- * Copyright (c) 2021, Norbert Schulz
+ * Copyright (c) 2022, Norbert Schulz
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
  */
 #include "hal/Gpio/Gpio.h"
 #include "hal/Spi/Spi.h"
-#include "hal/Cpu.h"
+#include "hal/Cpu/Cpu.h"
 #include "service/Display/Display.h"
 
 
@@ -44,11 +44,11 @@ namespace service
     {
         if (select)
         {
-            hal::clrPinDispCS();
+            hal::Gpio::clrDispCS();
         }
         else
         {
-            hal::setPinDispCS();
+            hal::Gpio::clrDispCS();
         }
     }
 
@@ -162,7 +162,7 @@ namespace service
         sendCmd_P(R61_cmdTRES, sizeof(R61_cmdTRES));
     	sendCmd_P(RE3_cmdPWS, sizeof(RE3_cmdPWS));
 
-        hal::delayMS(100);
+        hal::Cpu::delayMS(100);
         sendCmd_P(R50_cmdCDI, sizeof(R50_cmdCDI));
     }
 
@@ -170,13 +170,13 @@ namespace service
     void Epd::sendCmd_P(const uint8_t * cmd, uint8_t size)
     {
         /* first byte is command */
-        hal::clrPinDispDC();
+        hal::Gpio::clrDispDC();
         hal::Spi::write_P(cmd, 1u);
 
         /* cmd data bytes */
         if (1u < size)
         {
-            hal::setPinDispDC();  /* data bytes */
+            hal::Gpio::clrDispDC();  /* data bytes */
             ++cmd; 
             --size;
             hal::Spi::write_P(cmd, size);
@@ -185,12 +185,12 @@ namespace service
 
     void Epd::waitForIdle(void)// If BUSYN=0 then waiting
     {
-        while(!(hal::getPinDispBusy()));
+        while(!(hal::Gpio::getDispBusy()));
     }
 
     void Epd::waitForBusy(void)// If BUSYN=1 then waiting
     {
-        while(hal::getPinDispBusy());
+        while(hal::Gpio::getDispBusy());
     }
 
     void Epd::configureSpi()
@@ -204,7 +204,7 @@ namespace service
 
         sendCmd_P(R61_cmdTRES, sizeof(R61_cmdTRES));
         sendCmd_P(R10_cmdDTM1, sizeof(R10_cmdDTM1));
-        hal::setPinDispDC();
+        hal::Gpio::clrDispDC();
     }
 
     void Epd::sendBlock(const uint8_t * block, uint8_t size)
@@ -232,11 +232,11 @@ namespace service
     {
         configureSpi();
 
-        hal::clrPinDispReset();                // low = module reset    
-        hal::delayMS(1);
+        hal::Gpio::clrDispReset();                // low = module reset    
+        hal::Cpu::delayMS(1);
 
-        hal::setPinDispReset();
-        hal::delayMS(200);    
+        hal::Gpio::clrDispReset();
+        hal::Cpu::delayMS(200);    
     }
 
     void Epd::clear(Epd::Color color)
@@ -248,6 +248,8 @@ namespace service
         uint16_t width(getWidth() >> 1u);
         uint16_t height(getHeight());
 
+        /* There is no clear command, set every pixel to given color.
+         */
         beginPaint();
 
         for(uint16_t i=0; i < width; i++) {
@@ -258,18 +260,18 @@ namespace service
 
         endPaint();
 
-        hal::delayMS(500);
+        hal::Cpu::delayMS(500);
     }
 
     void Epd::sleep(void)
     {
         configureSpi();
         
-        hal::delayMS(100);
+        hal::Cpu::delayMS(100);
 
         sendCmd_P(R07_cmdDSLP, sizeof(R07_cmdDSLP));
 
-        hal::delayMS(100);
-    	hal::clrPinDispReset(); /* Reset */
+        hal::Cpu::delayMS(100);
+    	hal::Gpio::clrDispReset(); /* Reset */
     }
 }

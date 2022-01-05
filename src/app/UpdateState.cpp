@@ -68,7 +68,7 @@ namespace app
             
         service::Epd::clear(service::Epd::CLEAN);
 
-        res = f_open(&fil, "P4063214.EPD", FA_READ);
+        res = f_open(&fil, "1.EPD", FA_READ);
 
         DEBUG_LOGP("f_open->%d\r\n", res);
         if (FR_OK == res)
@@ -86,7 +86,9 @@ namespace app
 
             service::Epd::endPaint();
         }
+
         service::Epd::sleep();
+        
         DEBUG_LOGP("displyDrv.Sleep() done\r\n");
         stateHandler.setState(SleepState::instance());
     }

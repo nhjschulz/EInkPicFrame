@@ -35,6 +35,7 @@
 
 #include <avr/io.h>
 #include <avr/power.h>
+#include <avr/wdt.h>
 
 /**
  * @brief Set power settings to disable unneeded stuff.
@@ -46,16 +47,24 @@ namespace hal
 {
     void init()
     {
-        hal::initGpio();
+        
+        /* no watchdog */
+        MCUSR = 0x00;
+        wdt_disable();
+        
+        hal::Gpio::init();
+
         configurePower();
     }
 }
 
 static void configurePower(void)
 {
-    ADCSRA = 0x00;   /* disable ADC */
+    ADCSRA = 0x00;      /* disable ADC               */
+    ACSR = _BV(ACD);    /* disable analog comparator */
 
-    /* PRR register settings */
+    /* PRR register settings
+     */
     power_adc_disable();
     power_timer1_disable();
     power_twi_disable();
