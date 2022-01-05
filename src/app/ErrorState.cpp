@@ -33,6 +33,7 @@
 #include "app/ErrorState.h"
 
 #include "service/Display/Display.h"
+#include "service/Power/Power.h"
 
 namespace app
 {
@@ -45,9 +46,13 @@ namespace app
 
     void ErrorState::enter()
     {
+        /* display blank red screen on error
+         */
         service::Epd::clear(service::Epd::RED);
         service::Epd::sleep();
-        for(;;)
-        {}
+
+    	/* Game over, shutdown now :( 
+         */
+        service::Power::halt();
     }
 }
