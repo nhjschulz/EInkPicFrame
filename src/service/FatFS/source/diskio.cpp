@@ -13,16 +13,14 @@
 
 /* This is a modified version  to support AVR 328P */
 
-#include <avr/io.h>
-
 #include "ff.h"
 #include "diskio.h"
 #include "hal/Spi/Spi.h"
-
+#include "hal/Gpio/Gpio.h"
 
 /* Port controls  (Platform dependent) */
-#define CS_LOW()	PORTD &= ~_BV(PD4)			/* CS=low */
-#define	CS_HIGH()	PORTD |= _BV(PD4)			/* CS=high */
+#define CS_LOW()	hal::clrPinSdCardCS()
+#define	CS_HIGH()	hal::setPinSdCardCS()
 #define MMC_CD		(true)						/* Card detected.   yes:true, no:false, default:true */
 #define MMC_WP		(true)		/* Write protected. yes:true, no:false, default:false */
 

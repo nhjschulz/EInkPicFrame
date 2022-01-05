@@ -29,55 +29,26 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+#include "hal/Gpio/Gpio.h"
 #include "hal/Spi/Spi.h"
+#include "hal/Cpu.h"
 #include "service/Display/Display.h"
 
-#include <avr/pgmspace.h>
-#include <util/delay.h>
-
-
-// Used PORT B pins
-#define PIN_RESET   PB0
-#define PIN_DC      PB1
-#define PIN_CS      PB2
-#define PIN_DIN     PB3
-#define PIN_CLK     PB5
-
-// Used PORT D pins
-#define PIN_BUSY    PD7
 
 namespace service 
 {
-    /* Hardware PIN access */
-
-    /** Set Data/Command line high (= data) */
-    static inline void DC_HIGH()  {  PORTB |= _BV(PIN_DC); }
-
-    /** Set Data/Command line low (= command) */
-    static inline void DC_LOW()   {  PORTB &= ~_BV(PIN_DC); }
-
-    /** Set Reset line high (= normal) */
-    static inline void RST_HIGH()  {  PORTB |= _BV(PIN_RESET); }
-
-    /** Set Reset line low (= reset) */
-    static inline void RST_LOW()   {  PORTB &= ~_BV(PIN_RESET); }
-
-    /** Get BUSY line */
-    static inline uint8_t GET_BUSY()   { return (PIND & _BV(PIN_BUSY)) ? 1u : 0u; }
-
-    /** Slavce select function for SPI when talking to display
+    /** Slave select function for SPI when talking to display
      * @see hal::SPi::configure
      */
     static void slaveSelect(bool select)
     {
         if (select)
         {
-            PORTB &= ~_BV(PIN_CS);
+            hal::clrPinDispCS();
         }
         else
         {
-            PORTB |= _BV(PIN_CS);
+            hal::setPinDispCS();
         }
     }
 
@@ -174,12 +145,6 @@ namespace service
 
     void Epd::init(void) 
     { 
-        // set output IO pins (excluding SPI controlled ones);
-        DDRB  |= _BV(PIN_RESET) | _BV (PIN_DC) | _BV(PIN_CS);
-        PORTB |= _BV(PIN_CS);
-
-        // set input IO pins (only busy)
-        DDRD &= ~_BV(PIN_BUSY);
 
         configureSpi();
 
@@ -197,7 +162,7 @@ namespace service
         sendCmd_P(R61_cmdTRES, sizeof(R61_cmdTRES));
     	sendCmd_P(RE3_cmdPWS, sizeof(RE3_cmdPWS));
 
-        _delay_ms(100);
+        hal::delayMS(100);
         sendCmd_P(R50_cmdCDI, sizeof(R50_cmdCDI));
     }
 
@@ -205,13 +170,13 @@ namespace service
     void Epd::sendCmd_P(const uint8_t * cmd, uint8_t size)
     {
         /* first byte is command */
-        DC_LOW();
+        hal::clrPinDispDC();
         hal::Spi::write_P(cmd, 1u);
 
         /* cmd data bytes */
         if (1u < size)
         {
-            DC_HIGH();
+            hal::setPinDispDC();  /* data bytes */
             ++cmd; 
             --size;
             hal::Spi::write_P(cmd, size);
@@ -220,12 +185,12 @@ namespace service
 
     void Epd::waitForIdle(void)// If BUSYN=0 then waiting
     {
-        while(!(GET_BUSY()));
+        while(!(hal::getPinDispBusy()));
     }
 
     void Epd::waitForBusy(void)// If BUSYN=1 then waiting
     {
-        while(GET_BUSY());
+        while(hal::getPinDispBusy());
     }
 
     void Epd::configureSpi()
@@ -239,7 +204,7 @@ namespace service
 
         sendCmd_P(R61_cmdTRES, sizeof(R61_cmdTRES));
         sendCmd_P(R10_cmdDTM1, sizeof(R10_cmdDTM1));
-        DC_HIGH();
+        hal::setPinDispDC();
     }
 
     void Epd::sendBlock(const uint8_t * block, uint8_t size)
@@ -267,11 +232,11 @@ namespace service
     {
         configureSpi();
 
-        RST_LOW();                // low = module reset    
-        _delay_ms(1);
+        hal::clrPinDispReset();                // low = module reset    
+        hal::delayMS(1);
 
-        RST_HIGH();
-        _delay_ms(200);    
+        hal::setPinDispReset();
+        hal::delayMS(200);    
     }
 
     void Epd::clear(Epd::Color color)
@@ -293,18 +258,18 @@ namespace service
 
         endPaint();
 
-        _delay_ms(500);
+        hal::delayMS(500);
     }
 
     void Epd::sleep(void)
     {
         configureSpi();
         
-        _delay_ms(100);
+        hal::delayMS(100);
 
         sendCmd_P(R07_cmdDSLP, sizeof(R07_cmdDSLP));
 
-        _delay_ms(100);
-    	RST_LOW(); // Reset
+        hal::delayMS(100);
+    	hal::clrPinDispReset(); /* Reset */
     }
 }
