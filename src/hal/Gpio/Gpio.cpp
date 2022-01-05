@@ -35,7 +35,7 @@
 namespace hal
 {
 
-    void initGpio(void)
+    void Gpio::init(void)
     {
         /* Unused pins are configured as inputs with pullup to save power. */
     

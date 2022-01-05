@@ -37,51 +37,59 @@
 
 namespace hal
 {
-    /** SW accessed pins */
-    enum Pins
+    class Gpio 
     {
-        PIN_DEBUG_LED    = PD2,
-        PIN_DEBUG_TRIG   = PD3,
+        public:
 
-        PIN_SDCARD_CS    = PD4,
-        PIN_SDCARD_POW   = PD5,
+        /** SW accessed pins
+        */
+        enum Pins
+        {
+            DEBUG_LED    = PD2,
+            DEBUG_TRIG   = PD3,
 
-        PIN_DISP_BUSY    = PD7,
-        PIN_DISP_RESET   = PB0,
-        PIN_DISP_DC      = PB1,
-        PIN_DISP_CS      = PB2,
-        PIN_DISP_POW     = PD6,
-        PIN_SPI_MOSI     = PB3,
-        PIN_SPI_MISO     = PB4,
-        PIN_SPI_CLK      = PB5
+            SDCARD_CS    = PD4,
+            SDCARD_POW   = PD5,
+
+            DISP_BUSY    = PD7,
+            DISP_RESET   = PB0,
+            DISP_DC      = PB1,
+            DISP_CS      = PB2,
+            DISP_POW     = PD6,
+            SPI_MOSI     = PB3,
+            SPI_MISO     = PB4,
+            SPI_CLK      = PB5
+        };
+
+        /**
+         * @brief Bring all pins into a defined and save start state.
+         * 
+         */
+        static void init(void);    
+
+        /* inliners for each used pin
+         */
+
+        inline static  void setDebugLed()     { PORTD |=  _BV(DEBUG_LED);  }
+        inline static  void clrDebugLed()     { PORTD &= ~_BV(DEBUG_LED);  }
+        inline static  void setDebugTrig()    { PORTD |=  _BV(DEBUG_TRIG); }
+        inline static  void clrDebugTrig()    { PORTD &= ~_BV(DEBUG_TRIG); }
+  
+        inline static void setSdCardCS()     { PORTD |=  _BV(SDCARD_CS);  }
+        inline static void clrSdCardCS()     { PORTD &= ~_BV(SDCARD_CS);  }
+        inline static void setSdCardPower()  { PORTD |=  _BV(SDCARD_POW); }
+        inline static void clrSdCardPower()  { PORTD &= ~_BV(SDCARD_POW); }
+
+        inline static void setDispReset()    { PORTB |=  _BV(DISP_RESET); }
+        inline static void clrDispReset()    { PORTB &= ~_BV(DISP_RESET); }
+        inline static void setDispDC()       { PORTB |=  _BV(DISP_DC);    }
+        inline static void clrDispDC()       { PORTB &= ~_BV(DISP_DC);    }
+        inline static void setDispCS()       { PORTB |=  _BV(DISP_CS);    }
+        inline static void clrDispCS()       { PORTB &= ~_BV(DISP_CS);    }
+        inline static void setDispPow()      { PORTD |=  _BV(DISP_POW);   }
+        inline static void clrDispPow()      { PORTD &= ~_BV(DISP_POW);   }
+
+        inline static bool getDispBusy()     { return (PIND & _BV(DISP_BUSY) ? true : false ); }
     };
-
-    /**
-     * @brief Bring all pins into a defined and save start state.
-     * 
-     */
-    void initGpio(void);    
-
-    inline void setPinDebugLed()     { PORTB |=  _BV(PIN_DEBUG_LED);  }
-    inline void clrPinDebugLed()     { PORTB &= ~_BV(PIN_DEBUG_LED);  }
-    inline void setPinDebugTrig()    { PORTB |=  _BV(PIN_DEBUG_TRIG); }
-    inline void clrPinDebugTrig()    { PORTB &= ~_BV(PIN_DEBUG_TRIG); }
-
-    inline void setPinSdCardCS()     { PORTD |=  _BV(PIN_SDCARD_CS);  }
-    inline void clrPinSdCardCS()     { PORTD &= ~_BV(PIN_SDCARD_CS);  }
-    inline void setPinSdCardPower()  { PORTD |=  _BV(PIN_SDCARD_CS);  }
-    inline void clrPinSdCardPower()  { PORTD &= ~_BV(PIN_SDCARD_CS);  }
-
-    inline void setPinDispReset()    { PORTB |=  _BV(PIN_DISP_RESET); }
-    inline void clrPinDispReset()    { PORTB &= ~_BV(PIN_DISP_RESET); }
-    inline void setPinDispDC()       { PORTB |=  _BV(PIN_DISP_DC);    }
-    inline void clrPinDispDC()       { PORTB &= ~_BV(PIN_DISP_DC);    }
-    inline void setPinDispCS()       { PORTB |=  _BV(PIN_DISP_CS);    }
-    inline void clrPinDispCS()       { PORTB &= ~_BV(PIN_DISP_CS);    }
-    inline void setPinDispPow()      { PORTD |=  _BV(PIN_DISP_POW);   }
-    inline void clrPinDispPow()      { PORTD &= ~_BV(PIN_DISP_POW);   }
-
-    inline bool getPinDispBusy()     { return (PIND & _BV(PIN_DISP_BUSY) ? true : false ); }
-
 }
 #endif /* GPIO_H_INCLUDED */
