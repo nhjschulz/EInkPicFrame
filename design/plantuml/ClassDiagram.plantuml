@@ -38,14 +38,20 @@ package Service {
       
     }
     class Display {
-        +enable(bool)
+        +init()
+        +reset()
+        +beginPaint()
+        +endPaint()
+        +sendBlock()
     }
     class SDCard {
         +enable(bool)
     }
     class Debug
-    class Sleep {
-        +enter(enum Duration duration)
+    class Power {
+        +enable(Device)
+        +disable(Device)
+        +halt()
     }
 
 }
@@ -59,18 +65,24 @@ package Hal {
     }
     
     class HalInit
-    class Power {
+    class Cpu {
         +enable(Device, bool)
         +sleep()
     }
     class Gpio {
-        +set(id, bool state)
+        +init()
+        +setPinXXX()
+        +clrPinXXX()
+        +getPinXXX()
     }
 
     class TickTimer {
 
     }
+    
+    class WakeUpTimer {
 
+    }
 
 }
 
@@ -78,7 +90,7 @@ InitState --> ServiceInit
 ServiceInit --> HalInit
 UpdateState --> FileIO
 UpdateState --> Display
-SleepState --> Sleep
+SleepState --> Power
 FileIO ->FatFS
 FatFS --> SDCard
 FileIO --> SDCard
@@ -87,8 +99,9 @@ Debug --> Uart
 Debug --> Gpio
 SDCard --> Spi
 Display --> Spi
-SDCard --> Power
-Display --> Power
-Sleep --> Power
+Display --> Gpio
+Power --> Cpu
+Power --> WakeUpTimer
+Power --> Gpio
 FatFS --> TickTimer
 @enduml
