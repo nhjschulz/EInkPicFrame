@@ -32,6 +32,7 @@
 #include "service/Power/Power.h"
 
 #include "hal/Cpu/Cpu.h"
+#include "hal/Gpio/Gpio.h"
 
 namespace service
 {
@@ -42,4 +43,37 @@ namespace service
             hal::Cpu::halt();
         }
     }
+
+
+     void Power::enable(Device device)
+     {
+         switch(device)
+         {
+            case POW_SDCARD:
+            	hal::Gpio::setSdCardPower();
+                hal::Cpu::delayMS(20u);
+                break;
+
+            case POW_DISPLAY:
+                hal::Gpio::setDispPow();
+                hal::Cpu::delayMS(50u);
+                break;
+         }
+
+     }
+
+     void Power::disable(Device device)
+     {
+         switch(device)
+         {
+            case POW_SDCARD:
+             	hal::Gpio::clrSdCardPower();
+                break;
+
+            case POW_DISPLAY:
+                hal::Gpio::clrDispPow();
+                break;
+         }
+     }
+
 }

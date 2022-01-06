@@ -39,11 +39,35 @@ namespace service
         public:
         
         /**
+         * @brief devices with switchable power
+         * 
+         */
+        enum Device
+        {
+            POW_SDCARD,         /**< SDCARD module   */
+            POW_DISPLAY
+        };
+
+        /**
          * @brief Halt system.
          * 
          * Requires reset to resume execution from start.
          */
         static void halt(void);
+
+        /**
+         * @brief Enable (power) given device.
+         * 
+         * @param device  Device ID
+         */
+        static void enable(Device device);
+
+        /**
+         * @brief Disable (unpower) given device.
+         * 
+         * @param device Device ID
+         */
+        static void disable(Device device);
 
         private:
             Power(const Power&);
