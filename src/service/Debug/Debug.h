@@ -42,7 +42,7 @@
 #define DEBUG_INIT()         service::Debug::init()
 #define DEBUG_LOG(fmt, ...)  service::Debug::log(fmt, ##__VA_ARGS__)
 #define DEBUG_LOGP(fmt, ...) service::Debug::logP(PSTR(fmt), ##__VA_ARGS__)
-
+#define DEBUG_TRIGGER(v)     service::Debug::setTriggerPin(v)
 namespace service
 {
     /** Initialize debug module 
@@ -65,6 +65,13 @@ namespace service
          * @param[in] fmt string CONSTANT with printf fmt
          */
         static void logP(const char * fmt, ...);
+
+        /**
+         * @brief Set the Trigger Pin
+         * 
+         * @param set  true = high, false = low
+         */
+        static void setTriggerPin(bool set);
     };
 }
 

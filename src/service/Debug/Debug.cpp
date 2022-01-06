@@ -35,7 +35,9 @@
 #if defined(WITH_DEBUG)
 
 #include "service/Debug/Debug.h"
+
 #include "hal/Uart/Uart.h"
+#include "hal/Gpio/Gpio.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -108,6 +110,18 @@ namespace service
         va_start (args, fmt);
         vfprintf_P(&uartFileStream, fmt, args);
         va_end (args);
+    }
+
+    void DebugsetTriggerPin(bool set)
+    {
+        if (set)
+        {
+            hal::Gpio::setDebugTrig();
+        }
+        else
+        {
+            hal::Gpio::clrDebugTrig();
+        }
     }
 }
 
