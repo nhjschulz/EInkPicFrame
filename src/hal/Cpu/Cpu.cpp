@@ -33,9 +33,24 @@
 #include "hal/Cpu/Cpu.h"
 
 #include <avr/sleep.h>
+#include <avr/power.h>
 
 namespace hal
 {
+    void Cpu::setClock(Clock clkMode)
+    {
+        switch (clkMode)
+        {
+            case CLK_NORMAL:
+                clock_prescale_set(clock_div_8);     /* 1 Mhz using internal 8Mhz clock */
+                break;
+
+            case CLK_SLEEP:
+                clock_prescale_set(clock_div_256);   /* 31.25 Khz, slowest possible clock */
+                break;
+        }
+    }
+
     void Cpu::halt(void)
     {
         irqDisable();

@@ -42,6 +42,12 @@ namespace hal
     {
         public:
         
+        enum Clock
+        {
+            CLK_NORMAL,     /**< configure cpu clock for normal operation */
+            CLK_SLEEP       /**< configure cpu clock for sleep operation  */
+        };
+
         /**
          * @brief disable all interrupts
          * 
@@ -69,6 +75,13 @@ namespace hal
         {
             _delay_ms(ms);
         }
+
+        /**
+         * @brief Configure CPU clock
+         * 
+         * @param  clkMode New clock mode s
+         */
+        static void setClock(Clock clkMode);
 
         /** Halt (shutdown) cpu/system
          */
