@@ -36,6 +36,7 @@
 #include "service/Debug/Debug.h"
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#include <avr/power.h>
 
 /*******************************************************************************
     Module statics
@@ -64,6 +65,8 @@ namespace hal
     
     void Spi::enable()
     {
+        power_spi_enable();
+
         m_slaveSelect = nullptr;
 
         SPCR =  _BV(MSTR) |        /*  MCU is SPI master  */
@@ -73,6 +76,8 @@ namespace hal
     void Spi::disable()
     {
         SPCR &= ~_BV(SPE);         /* turn off SPI         */
+
+        power_spi_disable();
     }
 
     void Spi::configure(
