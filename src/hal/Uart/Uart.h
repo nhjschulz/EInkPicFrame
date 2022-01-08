@@ -134,7 +134,7 @@ namespace hal
         RetVal open(const Cfg& config);
 
         /** Close port 
-         *  This will stop communication intantly, discarding pending data
+         *  This will stop communication after draining pending data.
          */
         RetVal close();
  
@@ -159,7 +159,6 @@ namespace hal
         /** Singelton access 
         */
         static Uart& get() { return m_instance; }
-
 
         private:
 

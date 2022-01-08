@@ -34,8 +34,11 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
+#include <avr/power.h>
+#include <util/delay.h>
 
-/** UART driver for the AVR328P USART in asynchronous mode */
+/** UART driver for the AVR328P USART in asynchronous mode
+ */
 namespace hal
 {
     /** UART singleton instance
@@ -196,9 +199,6 @@ namespace hal
             {
                 localUCSR0A |= _BV(U2X0);
             }
-
-            UBRR0H = pgm_read_byte(&regBaudrate[cfg.m_baudRate].high);
-            UBRR0L = pgm_read_byte(&regBaudrate[cfg.m_baudRate].low);;
         }
         else
         {
@@ -250,8 +250,12 @@ namespace hal
         m_cfg = cfg;
         m_isOpen = true;
 
+        power_usart0_enable();
+
         /* Shoot! (B last, it enables UART RX/TX)... 
          */
+        UBRR0H = pgm_read_byte(&regBaudrate[cfg.m_baudRate].high);
+        UBRR0L = pgm_read_byte(&regBaudrate[cfg.m_baudRate].low);
         UCSR0A = localUCSR0A;
         UCSR0C = localUCSR0C;
         UCSR0B = localUCSR0B;
@@ -266,12 +270,27 @@ namespace hal
             return RET_NOTOPEN;
         }
 
+        /* drain TX buffers if TX enabled */
+        if (0u != (UCSR0B & _BV(TXEN0)))
+        {
+            while (UCSR0B & _BV(UDRIE0))
+            {
+
+            }
+            while(0u == (UCSR0A & _BV(TXC0)))
+            {
+            }
+            _delay_ms(1);
+        }
+
         m_isOpen = false;
 
         /* disable receiver/transmitter and interrupts
         */
         UCSR0B &= ~(_BV(RXEN0)  | _BV(TXEN0)  | 
                     _BV(RXCIE0) | _BV(TXCIE0) | _BV(UDRIE0));
+ 
+        power_usart0_disable();
 
         return RET_SUCCESS;
     }
@@ -317,7 +336,6 @@ namespace hal
         return RET_SUCCESS;
     }
 
-
     Uart::RetVal Uart::receive(uint8_t& byte)
     {
         if (!m_isOpen)
@@ -350,7 +368,7 @@ ISR(USART_UDRE_vect)
     }
     else
     {
-        /* no further data, disable tx complete interrupt
+        /* no further data, disable interrupt
          */
         UCSR0B &= ~(_BV(UDRIE0)); 
     }
