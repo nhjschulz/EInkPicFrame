@@ -32,6 +32,9 @@
 #ifndef POWER_H_INCLUDED
 #define POWER_H_INCLUDED
 
+#include "hal/Cpu/Cpu.h"
+#include "hal/Timer/WakeUpTimer.h"
+
 namespace service
 {
     class Power
@@ -56,6 +59,20 @@ namespace service
         static void halt(void);
 
         /**
+         * @brief sleep CPU
+         * 
+         */
+        static void sleep(void)
+        {
+            hal::Cpu::powerSafe();
+        }
+
+        static uint16_t getSleepDurationMs()
+        {
+            return hal::WakeUpTimer::WAKEUP_INTERVAl_MS;
+        }
+
+        /**
          * @brief Enable (power) given device.
          * 
          * @param device  Device ID
@@ -68,6 +85,17 @@ namespace service
          * @param device Device ID
          */
         static void disable(Device device);
+
+        /**
+         * @brief Resume power for devices
+         */
+        static void resume(void);
+
+        /**
+         * @brief Suspend power
+         * 
+         */
+        static void suspend(void);
 
         private:
             Power(const Power&);

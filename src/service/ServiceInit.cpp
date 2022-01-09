@@ -30,38 +30,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "hal/Cpu/Cpu.h"
-#include "hal/HalInit.h"
-#include "hal/Spi/Spi.h"
-#include "hal/Timer/TickTimer.h"
-
 #include "service/ServiceInit.h"
-#include "service/Display/Display.h"
-#include "service/FileIo/FileIo.h"
-#include "service/Debug/Debug.h"
+#include "service/Power/Power.h"
 
-extern "C" void disk_timerproc (void);
+#include "hal/HalInit.h"
 
 namespace service
 {
     void init(void)
     {
         hal::init();
-        resume();
-    }
-
-    void resume(void)
-    {
-        hal::Spi::init();
-        hal::Spi::enable();
-
-        hal::TickTimer::init();
-        hal::TickTimer::enable(disk_timerproc);
-
-        service::Epd::init();
-
-        DEBUG_INIT();
-
-        hal::Cpu::irqEnable();
+        service::Power::resume();
     }
 }

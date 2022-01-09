@@ -33,6 +33,17 @@
 
 #include "hal/Cpu/Cpu.h"
 #include "hal/Gpio/Gpio.h"
+#include "hal/Spi/Spi.h"
+#include "hal/Timer/TickTimer.h"
+#include "hal/Uart/Uart.h"
+#include "hal/Timer/WakeUpTimer.h"
+
+#include "service/Display/Display.h"
+#include "service/FileIo/FileIo.h"
+#include "service/Debug/Debug.h"
+
+
+extern "C" void disk_timerproc (void);
 
 namespace service
 {
@@ -44,11 +55,10 @@ namespace service
         }
     }
 
-
-     void Power::enable(Device device)
-     {
-         switch(device)
-         {
+    void Power::enable(Device device)
+    {
+        switch(device)
+        {
             case POW_SDCARD:
             	hal::Gpio::setSdCardPower();
                 hal::Cpu::delayMS(20u);
@@ -58,9 +68,8 @@ namespace service
                 hal::Gpio::setDispPow();
                 hal::Cpu::delayMS(50u);
                 break;
-         }
-
-     }
+        }
+    }
 
      void Power::disable(Device device)
      {
@@ -75,5 +84,44 @@ namespace service
                 break;
          }
      }
+
+    void Power::suspend()
+    {
+        hal::Uart::get().close();
+
+        /* ensure external modules off */
+        service::Power::disable(service::Power::POW_SDCARD);
+        service::Power::disable(service::Power::POW_DISPLAY);
+
+        /* disable on chip devices */
+        hal::Spi::disable();
+        hal::TickTimer::disable();
+
+        hal::Cpu::setClock(hal::Cpu::CLK_SLEEP);
+
+        /* enable wakeup timer */
+        hal::WakeUpTimer::init();
+        hal::WakeUpTimer::enable();    
+    }
+    
+    void Power::resume(void)
+    {
+        /* disable wakeup timer */
+        hal::WakeUpTimer::disable();
+
+        hal::Cpu::setClock(hal::Cpu::CLK_NORMAL);
+        
+        hal::Spi::init();
+        hal::Spi::enable();
+
+        hal::TickTimer::init();
+        hal::TickTimer::enable(disk_timerproc);
+
+        service::Epd::init();
+
+        DEBUG_INIT();
+
+        hal::Cpu::irqEnable();
+    }
 
 }
