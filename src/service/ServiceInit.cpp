@@ -35,7 +35,9 @@
 #include "hal/Spi/Spi.h"
 #include "hal/Timer/TickTimer.h"
 
+#include "service/ServiceInit.h"
 #include "service/Display/Display.h"
+#include "service/FileIo/FileIo.h"
 #include "service/Debug/Debug.h"
 
 extern "C" void disk_timerproc (void);
@@ -45,15 +47,18 @@ namespace service
     void init(void)
     {
         hal::init();
+        resume();
+    }
 
+    void resume(void)
+    {
         hal::Spi::init();
         hal::Spi::enable();
 
         hal::TickTimer::init();
- 
-        service::Epd::init();
- 
         hal::TickTimer::enable(disk_timerproc);
+
+        service::Epd::init();
 
         DEBUG_INIT();
 

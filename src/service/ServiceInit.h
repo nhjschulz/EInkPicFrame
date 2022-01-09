@@ -42,6 +42,12 @@ namespace service
      * 
      */
     extern void init(void);
+
+    /**
+     * @brief Resume from sleep
+     * 
+     */
+    extern void resume(void);
 }
 
 #endif /* SERVICEINIT_H_INCLUDED */
