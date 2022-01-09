@@ -117,6 +117,8 @@ namespace hal
                 break;
         }
         
+        SPSR |= _BV(SPI2X);
+
         if (SPCR != localSPCR)
         {
             SPCR = localSPCR;
