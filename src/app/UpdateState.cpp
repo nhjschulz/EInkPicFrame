@@ -32,64 +32,81 @@
 
 #include "app/UpdateState.h"
 
+#include "service/Power/Power.h"
 #include "service/Display/Display.h"
-#include "service/FatFS/source/ff.h"
+#include "service/FileIo/FileIo.h"
 #include "service/Debug/Debug.h"
 #include "app/ErrorState.h"
 #include "app/SleepState.h"
 
 namespace app
 {
-    static UpdateState updateState;
-
-    static FIL fil;
-    FATFS fs;
-
-    static uint8_t iobuf[100];
+    static UpdateState g_updateState;
+    static uint8_t g_iobuf[100];
 
     UpdateState& UpdateState::instance()
     {
-        return updateState;
+        return g_updateState;
     }
 
     void UpdateState::process(StateHandler& stateHandler)
     {
-        FRESULT res;
-
         DEBUG_LOGP("UpdateState::process");
+        bool errorOccured(false);
 
-        res = f_mount(&fs, "", 1);
-        if (res != FR_OK)
+        service::Power::enable(service::Power::POW_DISPLAY);
+
+        // clear takes as long as redraw and doesn't seem to be necessary.
+        // service::Epd::clear(service::Epd::CLEAN);
+
+        if (service::FileIo::enable())
         {
-            DEBUG_LOGP("f_mount returned %02x\r\n", res);
-            stateHandler.setState(ErrorState::instance());
-            return;
-        }
+            DEBUG_LOGP("FIle %s\r\n", service::FileIo::getFileName());
             
-        service::Epd::clear(service::Epd::CLEAN);
-
-        res = f_open(&fil, "1.EPD", FA_READ);
-
-        DEBUG_LOGP("f_open->%d\r\n", res);
-        if (FR_OK == res)
-        {
-            UINT read = 0;
-
             service::Epd::beginPaint();
-            do {
-                res = f_read(&fil, iobuf, sizeof(iobuf), &read);
-                if (0u != read)
-                {
-                    service::Epd::sendBlock(iobuf, read);
-                }
-            } while(0u != read);
+
+            if (service::FileIo::open())
+            {
+                uint16_t readRet(0u);
+                uint32_t total(0);
+
+                do {
+
+                    service::FileIo::read(g_iobuf, sizeof(g_iobuf), readRet);
+                    if (0u != readRet)
+                    {
+                        service::Epd::sendBlock(g_iobuf, readRet);
+                        total += readRet;
+                    }
+                } while (0u != readRet);
+
+                service::FileIo::close();
+
+                DEBUG_LOGP("read %ld\r\n", total);
+            }
+            
+            if (!service::FileIo::next())
+            {
+                DEBUG_LOGP("no next\r\n");
+                errorOccured = true;
+            }
+
+            service::FileIo::disable();
 
             service::Epd::endPaint();
         }
+        else
+        {
+            errorOccured = true;
+        }
 
-        service::Epd::sleep();
-        
-        DEBUG_LOGP("displyDrv.Sleep() done\r\n");
-        stateHandler.setState(SleepState::instance());
+        if (errorOccured)
+        {
+            stateHandler.setState(ErrorState::instance());
+        }
+        else
+        {
+            stateHandler.setState(SleepState::instance());
+        }
     }
 }

@@ -31,7 +31,10 @@
  */
 
 #include "app/SleepState.h"
+#include "app/UpdateState.h"
+
 #include "service/Debug/Debug.h"
+#include "service/Power/Power.h"
 
 namespace app
 {
@@ -44,21 +47,29 @@ namespace app
 
     void SleepState::enter(void)
     {
-       
+        DEBUG_LOGP("Sleep()\r\n");
+        service::Power::suspend();
     }
     
     void SleepState::process(StateHandler& stateHandler)
     {
-       (void)stateHandler;
-       
-        DEBUG_LOGP("Sleep()\r\n");
-        for(;;)
-        {}
+        /** sleep one day
+         */
+        //uint16_t loops((24ul*60ul*60ul*1000ul) / service::Power::getSleepDurationMs());
 
+        uint16_t loops(1);
+
+        while (loops--)
+        {
+            service::Power::sleep();
+        }
+
+        stateHandler.setState(UpdateState::instance());
     }
 
     void SleepState::leave(void)
     {
-       
+        service::Power::resume();
+        DEBUG_LOGP("Wakeup()\r\n");
     }
 }

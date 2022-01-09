@@ -32,9 +32,10 @@
 
 #include "app/InitState.h"
 #include "app/UpdateState.h"
+#include "app/ErrorState.h"
 
 #include "service/ServiceInit.h"
-
+#include "service/FileIo/FileIo.h"
 namespace app
 {
 
@@ -52,6 +53,13 @@ namespace app
 
     void InitState::process(StateHandler& stateHandler)
     {
-        stateHandler.setState(UpdateState::instance());
+        if (!service::FileIo::init())
+        {
+            stateHandler.setState(ErrorState::instance());
+        }
+        else
+        {
+            stateHandler.setState(UpdateState::instance());
+        }
     }
 }
