@@ -30,9 +30,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "TickTimer.h"
+#include "hal/Timer/TickTimer.h"
+#include "hal/Gpio/Gpio.h"
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/power.h>
 
 /*******************************************************************************
     Module statics
@@ -50,6 +53,8 @@ namespace hal
 {
     void TickTimer::init()
     {
+        power_timer0_enable();
+
         /* 10ms tick interval at 1 Mhz F_CPU */
         TIMSK0 &= ~((1 << OCIE0B) | (1 << OCIE0A) | (1 << TOIE0)); /* no int */
         TCCR0A |= ((1 << WGM01) | (0 << WGM00));              /* CTC mode */
@@ -68,9 +73,11 @@ namespace hal
     }
 
     void TickTimer::disable()
-    {
+    {        
         TIMSK0 &= ~(_BV(OCIE0A));
         TCCR0B &= ~((0 << CS02) | (0 << CS01) |(0 << CS00));   /* off */ 
+
+        power_timer0_disable();
     }
 }
 
@@ -82,4 +89,17 @@ ISR(TIMER0_COMPA_vect)
     {
         (*tickCallback)();
     }
+#if 0
+    static bool val(true);
+
+    if (val)
+    {
+        hal::Gpio::setDebugTrig();
+    }
+    else
+    {
+        hal::Gpio::clrDebugTrig();
+    }
+    val = !val;
+#endif
 }
