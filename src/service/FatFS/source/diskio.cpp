@@ -65,45 +65,6 @@ BYTE Timer1, Timer2;	/* 100Hz decrement timer */
 static
 BYTE CardType;			/* Card type flags */
 
-
-/*-----------------------------------------------------------------------*/
-/* Power Control  (Platform dependent)                                   */
-/*-----------------------------------------------------------------------*/
-/* When the target system does not support socket power control, there   */
-/* is nothing to do in these functions and chk_power always returns 1.   */
-
-static
-void power_on (void)
-{
-#if 0
-	{	/* Remove this block if no socket power control */
-		PORTE &= ~_BV(7);	/* Socket power on (PE7=low) */
-		DDRE |= _BV(7);
-		for (Timer1 = 2; Timer1; );	/* Wait for 20ms */
-	}
-
-	PORTB |= 0b00000101;	/* Configure SCK/MOSI/CS as output */
-	DDRB  |= 0b00000111;
-#endif
-	hal::Gpio::setSdCardPower();
-	for (Timer1 = 20; Timer1; );	/* Wait for 20ms */
-}
-
-static
-void power_off (void)
-{
-#if 0
-	{	/* Remove this block if no socket power control */
-		PORTE |= _BV(7);		/* Socket power off (PE7=high) */
-		for (Timer1 = 20; Timer1; );	/* Wait for 20ms */
-	}
-#endif
-	hal::Gpio::clrSdCardPower();
-	for (Timer1 = 2; Timer1; );	/* Wait for 20ms */
-}
-
-
-
 /*-----------------------------------------------------------------------*/
 /* Transmit/Receive data from/to MMC via SPI  (Platform dependent)       */
 /*-----------------------------------------------------------------------*/
@@ -296,12 +257,10 @@ DSTATUS disk_initialize (
 {
 	BYTE n, cmd, ty, ocr[4];
 
-	DDRD |= _BV(PD4);
-
 	if (pdrv) return STA_NOINIT;		/* Supports only single drive */
-	power_off();						/* Turn off the socket power to reset the card */
+
 	if (Stat & STA_NODISK) return Stat;	/* No card in the socket */
-	power_on();							/* Turn on the socket power */
+
 	hal::Spi::configure(hal::Spi::MODE_0, hal::Spi::BYTEORDER_MSB, nullptr);
 
 	for (n = 10; n; n--) xchg_spi(0xFF);	/* 80 dummy clocks */
@@ -334,8 +293,6 @@ DSTATUS disk_initialize (
 
 	if (ty) {			/* Initialization succeded */
 		Stat &= ~STA_NOINIT;		/* Clear STA_NOINIT */
-	} else {			/* Initialization failed */
-		power_off();
 	}
 
 	return Stat;
