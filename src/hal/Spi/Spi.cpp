@@ -55,9 +55,12 @@ namespace hal
 
     void Spi::init()
     {
-        /* initial pin setup before enabling SPI in MASTER mode
+        /* Initial pin setup before enabling SPI in MASTER mode.
+         * SCK and MOSI ,SS as outputs.
+         * SS and MOSI high showed lowest power need when SPI off.
          */ 
-        DDRB |=  _BV(PB5) | _BV(PB3) | _BV(PB2); // SCK and MOSI ,SS as output
+        PORTB |= _BV(PB3)| _BV(PB2);
+        DDRB |=  _BV(PB5) | _BV(PB3) | _BV(PB2);
 
         DDRB &= ~_BV(PB4);         /* MISO is input     */
         PORTB |= _BV(PB4);         /* MISO pulled high  */
