@@ -38,7 +38,6 @@
 #include "hal/Uart/Uart.h"
 #include "hal/Timer/WakeUpTimer.h"
 
-#include "service/Display/Display.h"
 #include "service/FileIo/FileIo.h"
 #include "service/Debug/Debug.h"
 
@@ -116,8 +115,6 @@ namespace service
 
         hal::TickTimer::init();
         hal::TickTimer::enable(disk_timerproc);
-
-        service::Epd::init();
 
         DEBUG_INIT();
 

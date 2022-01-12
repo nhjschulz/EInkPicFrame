@@ -51,19 +51,25 @@ namespace app
 
     void UpdateState::process(StateHandler& stateHandler)
     {
-        DEBUG_LOGP("UpdateState::process");
+        DEBUG_LOGP("UpdateState::process\r\n");
         bool errorOccured(false);
 
         service::Power::enable(service::Power::POW_DISPLAY);
+        DEBUG_LOGP("Epd::init()...");
+        service::Epd::init();
+        DEBUG_LOGP("done\r\n");
 
         // clear takes as long as redraw and doesn't seem to be necessary.
         // service::Epd::clear(service::Epd::CLEAN);
 
         if (service::FileIo::enable())
         {
-            DEBUG_LOGP("FIle %s\r\n", service::FileIo::getFileName());
+            DEBUG_LOGP("File %s\r\n", service::FileIo::getFileName());
             
+            DEBUG_LOGP("Epd::beginPaint()...");
+
             service::Epd::beginPaint();
+            DEBUG_LOGP("done\r\n");
 
             if (service::FileIo::open())
             {
@@ -93,7 +99,10 @@ namespace app
 
             service::FileIo::disable();
 
+            DEBUG_LOGP("Epd::endPaint()...");
             service::Epd::endPaint();
+            DEBUG_LOGP("done\r\n");
+            service::Epd::sleep();
         }
         else
         {
@@ -107,6 +116,8 @@ namespace app
         else
         {
             stateHandler.setState(SleepState::instance());
+            service::Power::disable(service::Power::POW_DISPLAY);
+
         }
     }
 }
