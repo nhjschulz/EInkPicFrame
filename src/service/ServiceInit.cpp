@@ -31,8 +31,6 @@
  */
 
 #include "service/ServiceInit.h"
-#include "service/Power/Power.h"
-
 #include "hal/HalInit.h"
 
 namespace service
@@ -40,6 +38,5 @@ namespace service
     void init(void)
     {
         hal::init();
-        service::Power::resume();
     }
 }

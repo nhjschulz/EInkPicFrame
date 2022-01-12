@@ -36,6 +36,8 @@
 
 #include "service/ServiceInit.h"
 #include "service/FileIo/FileIo.h"
+#include "service/Power/Power.h"
+
 namespace app
 {
 
@@ -49,6 +51,7 @@ namespace app
     void InitState::enter(void)
     {
         service::init();
+        service::Power::resume();
     }
 
     void InitState::process(StateHandler& stateHandler)
