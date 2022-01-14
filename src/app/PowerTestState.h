@@ -1,7 +1,7 @@
 /*
  * BSD 3-Clause License
  * 
- * Copyright (c) 2021, Norbert Schulz
+ * Copyright (c) 2022, Norbert Schulz
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -30,37 +30,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "app/StateHandler.h"
+#ifndef POWERTESTSTATE_H_INCLUDED
+#define POWERTESTSTATE_H_INCLUDED
+
+#include "app/BaseState.h"
 
 #if WITH_POWER_TEST != 0
+namespace app
+{
+    /**
+     * @brief Low level power consumption test code
+     * 
+     * enable with #define WITH_POWER_TEST=1
+     * 
+     */
+    class PowerTestState : public BaseState
+    {
+        public:
+            static PowerTestState& instance();
 
-#include "app/PowerTestState.h"
-
-/** Power consumption testing state
- */
-static app::StateHandler g_stateHandler(app::PowerTestState::instance());
-
-#else
-
-#include "app/InitState.h"
-
-/** State machine object 
- * 
- * Initial state is the InitState instance.
- */
-static app::StateHandler g_stateHandler(app::InitState::instance());
+        public:
+            virtual void enter(void);
+            virtual void process(StateHandler& stateHandler);
+    };
+}
 #endif
 
-int main(int argc, char** argv)
-{
-    (void)argc;
-    (void)argv;
-
-    /* run state machine forever */
-    for(;;)
-    {
-        g_stateHandler.process();
-    }
-
-    return 0;
-}
+#endif /* POWERTESTSTATE_H_INCLUDED */
