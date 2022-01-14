@@ -33,9 +33,11 @@
 #ifndef TICKTIMER_H_INCLUDED
 #define TICKTIMER_H_INCLUDED
 
+#include <stdint.h>
+
 namespace hal
 {
-    /** Timer 0  Driver for AVR 328P
+    /** Timer 0  Driver for AVR 328P (10ms interval)
     */
     class TickTimer 
     {
@@ -58,6 +60,29 @@ namespace hal
             /** Disable timer
              */
             static void disable();
+
+            /**
+             * @brief Get the current number of passed ticks 
+             * 
+             * Wraps every 256 * 0,010s = 2,56s. Can be used to
+             * measure small time deltas, tick resolution is 10ms
+             * 
+             * @return uint8_t 
+             */
+            static uint8_t getTickCount(void)
+            {
+                return m_ticks;
+            }
+
+        private:
+
+            /**
+             * @brief Helper function to give ISR access to tick counter
+             * 
+             */
+            friend void incTickIsr(void);
+
+            static uint8_t m_ticks;
 
         private:
             TickTimer(const TickTimer&);

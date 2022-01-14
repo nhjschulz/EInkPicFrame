@@ -51,6 +51,8 @@ hal::TickTimer::TickFunctionCB tickCallback = nullptr;
 
 namespace hal
 {
+    uint8_t TickTimer::m_ticks;
+
     void TickTimer::init()
     {
         power_timer0_enable();
@@ -65,6 +67,8 @@ namespace hal
 
     void TickTimer::enable(TickTimer::TickFunctionCB callback)
     {
+        m_ticks = 0u;
+        
         TCNT0 = 0u;
         TCCR0B |= ((1 << CS02) | (0 << CS01) |(0 << CS00));   /* clk/256  */ 
 
@@ -79,12 +83,20 @@ namespace hal
 
         power_timer0_disable();
     }
+
+    inline void incTickIsr(void)
+    {
+        ++TickTimer::m_ticks;
+    }
 }
+
 
 /** 10ms tick interrupt handler
  */
 ISR(TIMER0_COMPA_vect)
 { 
+    hal::incTickIsr();
+
     if (nullptr != tickCallback)
     {
         (*tickCallback)();
@@ -102,4 +114,5 @@ ISR(TIMER0_COMPA_vect)
     }
     val = !val;
 #endif
+
 }

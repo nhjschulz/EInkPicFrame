@@ -31,6 +31,7 @@
  */
 
 #include "hal/Cpu/Cpu.h"
+#include "hal/Timer/TickTimer.h"
 
 #include <avr/sleep.h>
 #include <avr/power.h>
@@ -77,8 +78,10 @@ namespace hal
 
     void Cpu::idle(uint8_t ticks)
     {
-        while (ticks--)
-        {
+        uint8_t currTicks(TickTimer::getTickCount());
+        uint8_t delta;
+
+        do {
             irqDisable();
 
             set_sleep_mode(SLEEP_MODE_IDLE);
@@ -86,7 +89,10 @@ namespace hal
             irqEnable();
             sleep_cpu();
             sleep_disable();
-        }
+
+            delta = TickTimer::getTickCount() - currTicks;
+        } while (delta <= ticks);
+        
     }
 
 } // namespace hal

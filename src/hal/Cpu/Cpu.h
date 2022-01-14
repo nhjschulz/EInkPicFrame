@@ -99,9 +99,6 @@ namespace hal
          * Put cpu in idle for ticks ticktimer ticks (which is ~10ms ). Use
          * as a power friendly alternative to delayMS();
          * 
-         * Note: EVERY interrupt counts as a "tick". If other interrupts fire,
-         * the idle period may be less than expected.
-         * 
          * @param ticks How often to enter idle
          */ 
         static void idle(uint8_t ticks);
