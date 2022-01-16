@@ -162,7 +162,7 @@ namespace service
         sendCmd_P(R61_cmdTRES, sizeof(R61_cmdTRES));
     	sendCmd_P(RE3_cmdPWS, sizeof(RE3_cmdPWS));
 
-        hal::Cpu::delayMS(100);
+        hal::Cpu::idle(10);
         sendCmd_P(R50_cmdCDI, sizeof(R50_cmdCDI));
     }
 
@@ -185,11 +185,18 @@ namespace service
 
     void Epd::waitForIdle(void)// If BUSYN=0 then waiting
     {
-        while(!(hal::Gpio::getDispBusy()));
+        do
+        {
+            hal::Cpu::idle(1);
+        } while(!(hal::Gpio::getDispBusy()));
     }
 
     void Epd::waitForBusy(void)// If BUSYN=1 then waiting
     {
+        do 
+        {
+            hal::Cpu::idle(1);
+        }
         while(hal::Gpio::getDispBusy());
     }
 
@@ -236,7 +243,7 @@ namespace service
         hal::Cpu::delayMS(1);
 
         hal::Gpio::setDispReset();
-        hal::Cpu::delayMS(200);    
+        hal::Cpu::idle(20);    
     }
 
     void Epd::clear(Epd::Color color)
@@ -259,19 +266,15 @@ namespace service
     	}
 
         endPaint();
-
-        hal::Cpu::delayMS(500);
     }
 
     void Epd::sleep(void)
     {
         configureSpi();
         
-        hal::Cpu::delayMS(100);
-
         sendCmd_P(R07_cmdDSLP, sizeof(R07_cmdDSLP));
 
-        hal::Cpu::delayMS(100);
+        hal::Cpu::idle(10);
     	hal::Gpio::clrDispReset(); /* Reset */
     }
 }
