@@ -67,9 +67,24 @@ namespace service
             hal::Cpu::powerSafe();
         }
 
+        /** Get sleep duration in ms
+         * 
+         * In our case we are woken up by the WakeTimer, get its max interval.
+         */
         static uint16_t getSleepDurationMs()
+
         {
             return hal::WakeUpTimer::WAKEUP_INTERVAl_MS;
+        }
+
+        /**
+         * @brief Enter idle mode for given timer ticks (1tick = 10ms)
+         * 
+         * @param ticks10ms Number of timer ticks to idle
+         */
+        static void idle(uint8_t ticks10ms)
+        {
+            hal::Cpu::idle(ticks10ms);
         }
 
         /**
