@@ -40,16 +40,18 @@ namespace hal
         /* Unused pins are configured as inputs with pullup to save power. */
     
         /* Port B: PB6/7 unused  others outputs*/
-        DDRB  = _BV(PB5) | _BV(PB4) | _BV(PB3) | _BV(PB2) | _BV(PB1) | _BV(PB0);
         PORTB = _BV(PB7) | _BV(PB6) |   /* unused input, enable pullup  */
+                _BV(PB4) |              /* MISO high */
+                _BV(PB3) |              /* MOSI high */
                 _BV(PB2);               /* display SPI Chip select high */
-    
+        DDRB  = _BV(PB5) | _BV(PB3) | _BV(PB2) | _BV(PB1) | _BV(PB0);
+
         /* Port  C ist unused, all input pullup */
         DDRC  = ~(_BV(DDC6) | _BV(DDC5) | _BV(DDC4) | _BV(DDC3) | _BV(DDC2) | _BV(DDC1) | _BV(DDC0)); 
         PORTC =   _BV(DDC6) | _BV(DDC5) | _BV(DDC4) | _BV(DDC3) | _BV(DDC2) | _BV(DDC1) | _BV(DDC0); 
     
         /* Port D: PD7 input (Display busy), others output */
-        DDRD  = _BV(PD6) | _BV(PD5) | _BV(PD4) | _BV(PD3) | _BV(PD2) | _BV(PD1) | _BV(PD0);
         PORTD = _BV(PD4);  /* SD Card SPI Chip delect high */
+        DDRD  = _BV(PD6) | _BV(PD5) | _BV(PD4) | _BV(PD3) | _BV(PD2) | _BV(PD1) | _BV(PD0);
     }
 }
