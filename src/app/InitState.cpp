@@ -37,6 +37,7 @@
 #include "service/ServiceInit.h"
 #include "service/FileIo/FileIo.h"
 #include "service/Power/Power.h"
+#include "service/Led/Led.h"
 
 namespace app
 {
@@ -51,7 +52,10 @@ namespace app
     void InitState::enter(void)
     {
         service::init();
+        service::Led::enable();
         service::Power::resume();
+        service::Power::idle(50);
+        service::Led::disable();
     }
 
     void InitState::process(StateHandler& stateHandler)
