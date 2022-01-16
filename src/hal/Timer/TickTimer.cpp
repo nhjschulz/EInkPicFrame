@@ -57,11 +57,11 @@ namespace hal
     {
         power_timer0_enable();
 
-        /* 10ms tick interval at 1 Mhz F_CPU */
+        /* 10ms tick interval at 4 Mhz F_CPU */
         TIMSK0 &= ~((1 << OCIE0B) | (1 << OCIE0A) | (1 << TOIE0)); /* no int */
         TCCR0A |= ((1 << WGM01) | (0 << WGM00));              /* CTC mode */
-        OCR0A = 38u;
-        OCR0B = 38u;
+        OCR0A = 156u;
+        OCR0B = 156u;
         TCCR0B &= ~((0 << CS02) | (0 << CS01) |(0 << CS00));   /* off */ 
     }
 

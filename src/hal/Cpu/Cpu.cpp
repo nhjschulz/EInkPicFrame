@@ -43,7 +43,7 @@ namespace hal
         switch (clkMode)
         {
             case CLK_NORMAL:
-                clock_prescale_set(clock_div_8);     /* 1 Mhz using internal 8Mhz clock */
+                clock_prescale_set(clock_div_2);     /* 4 Mhz using internal 8Mhz clock */
                 break;
 
             case CLK_SLEEP:
