@@ -3,26 +3,33 @@
 package app {
     class Main
     class StateHandler {
-        +loop()
+        +process()
         +setState(AbstractState&)
     }
+
     interface AbstractState {
         {abstract}+AbstractState(StateHandler&)
         {abstract} +enter()
         {abstract} +process()
         {abstract} +leave()
     }
+
+    class Parameter {
+
+    }
+
     package States {
         class SleepState
         class UpdateState
         class InitState
         class ErrorState
+        class LowBatteryState
 
         UpdateState -u-|> AbstractState
         SleepState -u-|> AbstractState
         InitState -u-|> AbstractState
         ErrorState -u-|> AbstractState
-
+        LowBatteryState -u-|> AbstractState
     }
 
     Main -> StateHandler
@@ -45,13 +52,26 @@ package Service {
         +sendBlock()
     }
     class SDCard {
-        +enable(bool)
+        +disk_initialize()
+        +disk_status()
+        +disk_read()
     }
+
     class Debug
+    
+    class Led {
+
+    }
+
     class Power {
         +enable(Device)
         +disable(Device)
         +halt()
+        +idle()
+    }
+
+    class Settings {
+
     }
 
 }
@@ -77,20 +97,41 @@ package Hal {
     }
 
     class TickTimer {
-
+        +init()
+        +enable()
+        +disable()
+        +getTickCount()
     }
     
     class WakeUpTimer {
+        +init()
+        +enable()
+        +disable()
+    }
 
+    class Adc {
+        +init()
+        +disable()
+        +enable()
+        +readChannel()
+    }
+
+    class EEprom {
+        +read()
     }
 
 }
 
 InitState --> ServiceInit
+InitState --> Led
 ServiceInit --> HalInit
 UpdateState --> FileIO
 UpdateState --> Display
 SleepState --> Power
+ErrorState --> Power
+UpdateState --> Power
+Parameter --> Settings
+
 FileIO ->FatFS
 FatFS --> SDCard
 FileIO --> SDCard
@@ -103,5 +144,9 @@ Display --> Gpio
 Power --> Cpu
 Power --> WakeUpTimer
 Power --> Gpio
+Power ---> Adc
 FatFS --> TickTimer
+Settings --> EEprom
+Led --> Gpio
+
 @enduml

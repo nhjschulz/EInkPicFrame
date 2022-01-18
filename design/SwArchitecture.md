@@ -28,3 +28,10 @@ This part implements generic services that can be reused in other applications
 ### Hal Layer
 
 This part implements the interface to the AVR 328P microcontroller.
+
+## Architecture Rules
+
+* System is static, there is no heap usage or dynamic object generation.
+* Classes are implemented as singletons or have only static elements as the system is static.
+* Favour many short over fewer large classes (small is beautiful).
+* Distribute code phases to states even if they are small (extensibility).
