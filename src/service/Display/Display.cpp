@@ -202,7 +202,10 @@ namespace service
 
     void Epd::configureSpi()
     {
-        hal::Spi::configure(hal::Spi::MODE_0, hal::Spi::BYTEORDER_MSB, dispSlaveSelect);
+        hal::Spi::configure(
+            hal::Spi::CLK_2000000,
+            hal::Spi::MODE_0, 
+            hal::Spi::BITORDER_MSB, dispSlaveSelect);
     } 
 
     void Epd::beginPaint()
