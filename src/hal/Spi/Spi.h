@@ -60,10 +60,22 @@ namespace hal
                 MODE_3  /**< CPOL=1, CPHA=1 Setup (Falling) Sample (Rising) */
             };
 
-            enum ByteOrder
+            /**  BitOrder in transmit
+             */
+            enum BitOrder
             {
-                BYTEORDER_MSB,   /**< MSB first */
-                BYTEORDER_LSB    /**< LSB first */
+                BITORDER_MSB,   /**< MSB first */
+                BITORDER_LSB    /**< LSB first */
+            };
+
+            /** SPI Clock speed 
+             * 
+             */
+            enum ClockSpeeed
+            {
+                CLK_250000,         /* 250kHz = use for SDCard init */
+                CLK_100000,         /* 1Mhz clock */
+                CLK_2000000         /* 2Mhz fast clock */
             };
 
             /** Initialize SPI hardware
@@ -79,11 +91,17 @@ namespace hal
             static void disable();
 
             /** Configure SPI transfers
+             *  @param[in] clk clock spped  @see enum ClockSpeeed
              *  @param[in] mode tansfer mode @see enum Mode
              *  @param[in] order bit order in transmits
              *  @param[in] slaveSelect slave select/deselect function
              */
-            static void configure(Mode mode, ByteOrder order, SlaveSelect slaveSelect);
+            static void configure(
+                ClockSpeeed clkSpeed,
+                Mode mode, 
+                BitOrder order, 
+                SlaveSelect slaveSelect
+            );
 
             /** Read bytes from SPI (by sending zeros)
              *  @param[out] buffer received data

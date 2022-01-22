@@ -34,9 +34,11 @@
 #include "Spi.h"
 
 #include "service/Debug/Debug.h"
+
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <avr/power.h>
+#include <avr/pgmspace.h>
 
 /*******************************************************************************
     Module statics
@@ -45,6 +47,29 @@
 /** Block until current byte transmissing completes.
  */
 static inline void waitTXcomplete();
+
+/** SPI clock settings 
+ * 
+ * Note: 1Mhz CPU can only go up to 1Mhz SPIU
+ */
+static const struct ClockSettings 
+{
+    uint8_t divider;   /**< clock divder settings in SPCR */
+    uint8_t use2X;     /**< enable/disable 2x mode        */
+} g_ClkParam[] PROGMEM = 
+{
+#if F_CPU == 1000000
+    {  (0 << SPR1) | (0 << SPR0), 0u  }, /* CLK_250000, fosc/4     */
+    {  (0 << SPR1) | (0 << SPR0), 0u } , /* CLK_1000000 fosc/2 * 2 */
+    {  (0 << SPR1) | (0 << SPR0), 0u  }, /* CLK_2000000 fosc/2 * 2 */
+#elif F_CPU == 4000000
+    {  (0 << SPR1) | (1 << SPR0), 0u }, /* CLK_250000, fosc/16    */
+    {  (0 << SPR1) | (0 << SPR0), 0u }, /* CLK_1000000 fosc/4     */
+    {  (0 << SPR1) | (0 << SPR0), 1u }, /* CLK_2000000 fosc/4 * 2 */
+#else
+#error unsupported clock speed
+#endif
+};
 
 /*******************************************************************************
     Implementation
@@ -84,13 +109,14 @@ namespace hal
     }
 
     void Spi::configure(
+            Spi::ClockSpeeed clock,
             Spi::Mode mode,
-            Spi::ByteOrder order,
+            Spi::BitOrder order,
             Spi::SlaveSelect slaveSelect)
     {
         uint8_t localSPCR(SPCR);
 
-        if (BYTEORDER_MSB == order)
+        if (BITORDER_MSB == order)
         {
             localSPCR &= ~_BV(1<<DORD);
         }
@@ -120,7 +146,18 @@ namespace hal
                 break;
         }
         
-        SPSR |= _BV(SPI2X);
+        /* clock settings */
+        localSPCR &= ~(_BV(SPR1) | _BV(SPDR0));
+        localSPCR |= pgm_read_byte(&(g_ClkParam[clock].divider));
+
+        if (0u != pgm_read_byte(&(g_ClkParam[clock].use2X)))
+        {
+            SPSR |= _BV(SPI2X);
+        }
+        else
+        {
+            SPSR &= ~_BV(SPI2X);
+        }
 
         if (SPCR != localSPCR)
         {
@@ -147,7 +184,8 @@ namespace hal
         if (nullptr != m_slaveSelect) 
         {
             m_slaveSelect(false);
-        }    }
+        }   
+    }
 
     void Spi::write(const uint8_t buffer[], uint16_t size)
     {
