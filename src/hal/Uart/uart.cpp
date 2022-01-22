@@ -70,7 +70,7 @@ namespace hal
             {   UBRRH_VALUE, UBRRL_VALUE, USE_2X    },
         #undef BAUD
 
-        #if F_CPU > 1000000
+#if F_CPU > 1000000
 
         #define BAUD    14400
         #include <util/setbaud.h>
@@ -81,7 +81,8 @@ namespace hal
         #include <util/setbaud.h>
             {   UBRRH_VALUE, UBRRL_VALUE, USE_2X    },
         #undef BAUD
-
+#endif
+#if F_CPU > 4000000
         #define BAUD    28800
         #include <util/setbaud.h>
             {   UBRRH_VALUE, UBRRL_VALUE, USE_2X    },
@@ -117,7 +118,7 @@ namespace hal
             {   UBRRH_VALUE, UBRRL_VALUE, USE_2X    },
         #undef BAUD
         
-        #endif
+    #endif
     };
 
     /** Parity register bit settings in UCSR0C
