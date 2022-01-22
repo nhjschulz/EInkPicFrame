@@ -49,9 +49,15 @@ namespace hal
         /* Port  C ist unused, all input pullup */
         DDRC  = ~(_BV(DDC6) | _BV(DDC5) | _BV(DDC4) | _BV(DDC3) | _BV(DDC2) | _BV(DDC1) | _BV(DDC0)); 
         PORTC =   _BV(DDC6) | _BV(DDC5) | _BV(DDC4) | _BV(DDC3) | _BV(DDC2) | _BV(DDC1) | _BV(DDC0); 
-    
+
+#if BOARD_REVISION < 0x0200 /* N-Mosfets on display/SDcard */
         /* Port D: PD7 input (Display busy), others output */
         PORTD = _BV(PD4);  /* SD Card SPI Chip delect high */
+#else    
+        /* Port D: PD7 input (Display busy), others output   */
+        PORTD = _BV(PD4) |  /* SD Card SPI Chip delect high  */
+                _BV(PD6);   /* P-FET SD Card Gate high = off */
+#endif
         DDRD  = _BV(PD6) | _BV(PD5) | _BV(PD4) | _BV(PD3) | _BV(PD2) | _BV(PD1) | _BV(PD0);
     }
 }

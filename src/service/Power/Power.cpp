@@ -59,7 +59,11 @@ namespace service
         switch(device)
         {
             case POW_SDCARD:
+#if BOARD_REVISION < 0x0200 /* N-Mosfets on display/SDcard */
             	hal::Gpio::setSdCardPower();
+#else
+            	hal::Gpio::clrSdCardPower();
+#endif
                 hal::Cpu::delayMS(20u);
                 break;
 
@@ -75,7 +79,11 @@ namespace service
          switch(device)
          {
             case POW_SDCARD:
-             	hal::Gpio::clrSdCardPower();
+#if BOARD_REVISION < 0x0200 /* N-Mosfets on display/SDcard */
+                hal::Gpio::clrSdCardPower();
+#else
+             	hal::Gpio::setSdCardPower();
+#endif
                 break;
 
             case POW_DISPLAY:
@@ -96,6 +104,7 @@ namespace service
         hal::Spi::disable();
         hal::TickTimer::disable();
 
+        /* slow down clock */
         hal::Cpu::setClock(hal::Cpu::CLK_SLEEP);
 
         /* enable wakeup timer */
@@ -108,8 +117,10 @@ namespace service
         /* disable wakeup timer */
         hal::WakeUpTimer::disable();
 
+        /* speed up clock */
         hal::Cpu::setClock(hal::Cpu::CLK_NORMAL);
         
+        /* turn on onchip devices */
         hal::Spi::init();
         hal::Spi::enable();
 
