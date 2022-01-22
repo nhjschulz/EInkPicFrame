@@ -51,8 +51,11 @@ namespace app
 
     void UpdateState::process(StateHandler& stateHandler)
     {
-        DEBUG_LOGP("UpdateState::process\r\n");
-        bool errorOccured(false);
+        DEBUG_LOGP("Power: %d mV (ref %d): \r\n",
+                service::Power::getSupplyVoltage_mV(),
+                service::Power::getReferenceVoltage_mV());
+                
+        bool errorOccured(false) ;
 
         service::Power::enable(service::Power::POW_DISPLAY);
         DEBUG_LOGP("Epd::init()...");

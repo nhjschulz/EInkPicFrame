@@ -37,7 +37,7 @@
 #include "hal/Timer/TickTimer.h"
 #include "hal/Uart/Uart.h"
 #include "hal/Timer/WakeUpTimer.h"
-
+#include "hal/Adc/Adc.h"
 #include "service/FileIo/FileIo.h"
 #include "service/Debug/Debug.h"
 
@@ -101,6 +101,7 @@ namespace service
         service::Power::disable(service::Power::POW_DISPLAY);
 
         /* disable on chip devices */
+        hal::Adc::disable();
         hal::Spi::disable();
         hal::TickTimer::disable();
 
@@ -126,6 +127,8 @@ namespace service
 
         hal::TickTimer::init();
         hal::TickTimer::enable(disk_timerproc);
+
+        hal::Adc::enable();
 
         DEBUG_INIT();
 

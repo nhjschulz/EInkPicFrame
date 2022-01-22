@@ -34,6 +34,7 @@
 
 #include "hal/Cpu/Cpu.h"
 #include "hal/Timer/WakeUpTimer.h"
+#include "hal/Adc/Adc.h"
 
 namespace service
 {
@@ -111,6 +112,21 @@ namespace service
          * 
          */
         static void suspend(void);
+
+        /**
+         * @brief Get the Supply Voltage in milivolt
+         * 
+         * @return uint16_t voltage in mV
+         */
+        static uint16_t getSupplyVoltage_mV(void)
+        {
+            return hal::Adc::readChannel(hal::Adc::ADC_CHN_SUPPLY_VOLTAGE_MV);
+        }
+
+        static uint16_t getReferenceVoltage_mV(void)
+        {
+            return hal::Adc::readChannel(hal::Adc::ADC_CHN_CALIBRATION_MV);
+        }
 
         private:
             Power(const Power&);
