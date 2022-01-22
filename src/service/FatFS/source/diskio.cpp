@@ -18,6 +18,11 @@
 #include "hal/Spi/Spi.h"
 #include "hal/Gpio/Gpio.h"
 
+#if defined (WITH_DEBUG)
+#undef WITH_DEBUG
+#endif
+#include "service/Debug/Debug.h"
+
 /* Port controls  (Platform dependent) */
 #define CS_LOW()	hal::Gpio::clrSdCardCS()
 #define	CS_HIGH()	hal::Gpio::setSdCardCS()
@@ -119,14 +124,19 @@ void deselect (void)
 /*-----------------------------------------------------------------------*/
 
 static
-int select (void)	/* 1:Successful, 0:Timeout */
+int select (bool wait = true)	/* 1:Successful, 0:Timeout */
 {
 	CS_LOW();		/* Set CS# low */
 	xchg_spi(0xFF);	/* Dummy clock (force DO enabled) */
-	if (wait_ready(500)) return 1;	/* Wait for card ready */
 
-	deselect();
-	return 0;	/* Timeout */
+	if (wait)
+	{
+		if (wait_ready(500)) return 1;	/* Wait for card ready */
+
+		deselect();
+		return 0;	/* Timeout */
+	}
+	return 1;
 }
 
 
@@ -204,6 +214,7 @@ BYTE send_cmd (		/* Returns R1 resp (bit7==1:Send failed) */
 {
 	BYTE n, res;
 
+	DEBUG_LOGP("CMD %0x(%lx) --", cmd, arg);
 
 	if (cmd & 0x80) {	/* ACMD<n> is the command sequense of CMD55-CMD<n> */
 		cmd &= 0x7F;
@@ -214,7 +225,7 @@ BYTE send_cmd (		/* Returns R1 resp (bit7==1:Send failed) */
 	/* Select the card and wait for ready except to stop multiple block read */
 	if (cmd != CMD12) {
 		deselect();
-		if (!select()) return 0xFF;
+		if (!select(cmd != CMD0)) return 0xFF;
 	}
 
 	/* Send command packet */
@@ -231,10 +242,12 @@ BYTE send_cmd (		/* Returns R1 resp (bit7==1:Send failed) */
 	/* Receive command response */
 	if (cmd == CMD12) xchg_spi(0xFF);		/* Skip a stuff byte when stop reading */
 	n = 10;								/* Wait for a valid response in timeout of 10 attempts */
-	do
+	do {
 		res = xchg_spi(0xFF);
-	while ((res & 0x80) && --n);
+	} while ((res & 0x80) && --n);
 
+	DEBUG_LOGP("%02x\r\n", res);
+	
 	return res;			/* Return with the response value */
 }
 
@@ -261,12 +274,29 @@ DSTATUS disk_initialize (
 
 	if (Stat & STA_NODISK) return Stat;	/* No card in the socket */
 
-	hal::Spi::configure(hal::Spi::MODE_0, hal::Spi::BYTEORDER_MSB, nullptr);
+	hal::Spi::configure(hal::Spi::CLK_250000, 
+						hal::Spi::MODE_0, 
+						hal::Spi::BITORDER_MSB, 
+						nullptr);
 
 	for (n = 10; n; n--) xchg_spi(0xFF);	/* 80 dummy clocks */
 
+	/* Initialize card for SPI and enter Idle
+	 * Repeat a couple of times.Some cards don't react to first 
+	 * few requests.
+	 */
+	n = 10;
+	bool cmd0(false);
+
+	do 
+	{
+		cmd0 = send_cmd(CMD0, 0) == 1u;
+	}
+	while((false == cmd0) && (n-- > 0u));
+
 	ty = 0;
-	if (send_cmd(CMD0, 0) == 1) {			/* Enter Idle state */
+	if (true == cmd0) /* Enter Idle state was OK */
+ 	{
 		Timer1 = 100;						/* Initialization timeout of 1000 msec */
 		if (send_cmd(CMD8, 0x1AA) == 1) {	/* SDv2? */
 			for (n = 0; n < 4; n++) ocr[n] = xchg_spi(0xFF);		/* Get trailing return value of R7 resp */
@@ -331,7 +361,11 @@ DRESULT disk_read (
 	if (pdrv || !count) return RES_PARERR;
 	if (Stat & STA_NOINIT) return RES_NOTRDY;
 
-	hal::Spi::configure(hal::Spi::MODE_0, hal::Spi::BYTEORDER_MSB, nullptr);
+	hal::Spi::configure(
+		hal::Spi::CLK_2000000,
+		hal::Spi::MODE_0, 
+		hal::Spi::BITORDER_MSB, 
+		nullptr);
 
 	if (!(CardType & CT_BLOCK)) sector *= 512;	/* Convert to byte address if needed */
 
