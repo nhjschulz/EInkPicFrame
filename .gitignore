@@ -5,4 +5,5 @@
 .vscode/ipch
 hw/EinkPicFrame.kicad_pcb-bak
 hw/EinkPicFrame.sch-bak
+hw/EinkPicFrame-backups
 firmware.lss

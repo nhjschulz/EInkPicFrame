@@ -1,24 +1,27 @@
-@startuml
+@startuml ClassDiagram
 
 package app {
-    class Main
+
+    class Main {
+
+    }
     class StateHandler {
         +process()
         +setState(AbstractState&)
     }
 
-    interface AbstractState {
+    class Parameter {
+
+    }
+    
+    package States {
+
+            interface AbstractState {
         {abstract}+AbstractState(StateHandler&)
         {abstract} +enter()
         {abstract} +process()
         {abstract} +leave()
     }
-
-    class Parameter {
-
-    }
-
-    package States {
         class SleepState
         class UpdateState
         class InitState
@@ -115,13 +118,8 @@ package Hal {
         +enable()
         +readChannel()
     }
-
-    class EEprom {
-        +read()
-    }
-
 }
-
+Parameter -> FileIO
 InitState --> ServiceInit
 InitState --> Led
 ServiceInit --> HalInit
@@ -130,7 +128,7 @@ UpdateState --> Display
 SleepState --> Power
 ErrorState --> Power
 UpdateState --> Power
-Parameter --> Settings
+
 
 FileIO ->FatFS
 FatFS --> SDCard
@@ -146,7 +144,6 @@ Power --> WakeUpTimer
 Power --> Gpio
 Power ---> Adc
 FatFS --> TickTimer
-Settings --> EEprom
 Led --> Gpio
 
 @enduml
