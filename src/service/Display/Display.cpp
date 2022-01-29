@@ -278,6 +278,5 @@ namespace service
         sendCmd_P(R07_cmdDSLP, sizeof(R07_cmdDSLP));
 
         hal::Cpu::idle(10);
-    	hal::Gpio::clrDispReset(); /* Reset */
     }
 }

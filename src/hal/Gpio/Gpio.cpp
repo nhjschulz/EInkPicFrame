@@ -37,12 +37,17 @@ namespace hal
 
     void Gpio::init(void)
     {
-        /* Unused pins are configured as inputs with pullup to save power. */
+        /* Unused pins are configured as inputs with pullup to save power. 
+         * HW V1 uses lowside MOSFET switches. All IO pins connected to
+         * display or SD need to be high during sleep to avoid discharging
+         * over signal lines.
+        */
     
         /* Port B: PB6/7 unused  others outputs*/
         PORTB = _BV(PB7) | _BV(PB6) |   /* unused input, enable pullup  */
-                _BV(PB4) |              /* MISO high */
-                _BV(PB3) |              /* MOSI high */
+                _BV(PB5) |              /* SPICLK high */
+                _BV(PB4) |              /* MISO high   */
+                _BV(PB3) |              /* MOSI high   */
                 _BV(PB2);               /* display SPI Chip select high */
         DDRB  = _BV(PB5) | _BV(PB3) | _BV(PB2) | _BV(PB1) | _BV(PB0);
 
