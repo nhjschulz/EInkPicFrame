@@ -35,9 +35,9 @@
 
 #include <avr/pgmspace.h>
 
-/** Debugging support (enabled with -D WITH_DEBUG) */
+/** Debugging support (enabled with -D WITH_DEBUG=1) */
 
-#if defined(WITH_DEBUG)
+#if WITH_DEBUG != 0
 
 #define DEBUG_INIT()         service::Debug::init()
 #define DEBUG_LOG(fmt, ...)  service::Debug::log(fmt, ##__VA_ARGS__)

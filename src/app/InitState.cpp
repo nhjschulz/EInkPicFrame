@@ -33,6 +33,7 @@
 #include "app/InitState.h"
 #include "app/UpdateState.h"
 #include "app/ErrorState.h"
+#include "app/Parameter.h"
 
 #include "service/ServiceInit.h"
 #include "service/FileIo/FileIo.h"
@@ -66,6 +67,12 @@ namespace app
         }
         else
         {
+            Parameter::init();
+            service::Power::setCalibrationVoltages(
+                    Parameter::getRefVoltage(),
+                    Parameter::getCalVoltage()
+            );
+            
             stateHandler.setState(UpdateState::instance());
         }
     }

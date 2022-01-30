@@ -88,6 +88,16 @@ namespace hal
              */
             static uint16_t readChannel(AdcChannel channel);
 
+            /**
+             * @brief 
+             * 
+             * @param refVoltage_mV  Voltage on AVCC pin for calibration
+             * @param supVoltage_mv  Calibrated reference voltage
+             */
+            static void calibrate(
+                    uint16_t refVoltage_mV,
+                    uint16_t supVoltage_mv);
+
         private:
             Adc();
             Adc(const Adc&);

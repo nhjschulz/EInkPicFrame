@@ -36,18 +36,18 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#ifndef SUPPLY_VOLTAGE
-#define SUPPLY_VOLTAGE 5000ul
-#endif
+/*******************************************************************************
+    Module statics
+*******************************************************************************/
 
-#ifndef REFERENCE_VOLTAGE
-#defne REFERENCE_VOLTAGE 1100ul
-#endif
-
+static uint16_t g_refVoltage_mV(1100u);   /**< internal reference volatage    */
+static uint16_t g_supVoltage_mV(5000ul);  /**< supply voltage for calibration */
 namespace hal
 {
-    static inline void trigger_conversion()
+    static inline uint16_t triggerConversion(Adc::AdcChannel channel)
     {
+        (void)channel; /* always the same gets used */
+        
         /* start conversion */
         ADCSRA |= (1 << ADSC);
 
@@ -55,6 +55,8 @@ namespace hal
         while (ADCSRA & (1 << ADSC))
         {
         }
+
+        return ADC;
     }
 
     void Adc::init(void)
@@ -95,21 +97,17 @@ namespace hal
     uint16_t Adc::readChannel(Adc::AdcChannel channel)
     {
         uint16_t result(0xFFFF);
-        uint16_t adc;
+        uint32_t adc(triggerConversion(channel));
 
         switch(channel)
         {
             case Adc::ADC_CHN_SUPPLY_VOLTAGE_MV:
-            
-                trigger_conversion();
-                adc = ADC;
-
                 /* ADC = (VIN * 1024) / VREF =>   VREF = (VIN * 1024) / ADC
                  * VIN = 1100 mV
                 */
                 if (0u != adc)
                 {
-                    result = (REFERENCE_VOLTAGE * 1024ul) / ADC;
+                    result = (g_refVoltage_mV * 1024ul) / ADC;
                 }
                 else
                 {
@@ -118,13 +116,10 @@ namespace hal
                 break;
 
             case Adc::ADC_CHN_CALIBRATION_MV:
-                trigger_conversion();
-                adc = ADC;
-
                 /* ADC = (VIN * 1024) / VREF =>   VIN = (ADC * VREF) / 1024
                  * VIN = 1100 mV, VREF assumed to be calibrated to 5.0 V
                 */
-                result = (uint16_t)((((uint32_t)adc) * SUPPLY_VOLTAGE) / 1024ul);
+                result = (uint16_t)((adc * g_supVoltage_mV) / 1024ul);
                 break;
         }
 
@@ -136,4 +131,13 @@ namespace hal
         ADCSRA = 0x00;      /* disable ADC               */
         power_adc_disable();
     }
+
+    void Adc::calibrate(
+            uint16_t refVoltage_mV,
+            uint16_t supVoltage_mv)
+    {
+        g_refVoltage_mV = refVoltage_mV;
+        g_supVoltage_mV = supVoltage_mv;
+    }
+
 }

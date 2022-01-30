@@ -18,7 +18,7 @@
 #include "hal/Spi/Spi.h"
 #include "hal/Gpio/Gpio.h"
 
-#if defined (WITH_DEBUG)
+#if  WITH_DEBUG != 0
 #undef WITH_DEBUG
 #endif
 #include "service/Debug/Debug.h"

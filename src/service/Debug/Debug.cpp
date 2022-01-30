@@ -30,9 +30,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/** Debugging support - yes printf like (enabled with -D WITH_DEBUG) */
+/** Debugging support - yes printf like (enabled with -D WITH_DEBUG=1) */
 
-#if defined(WITH_DEBUG)
+#if WITH_DEBUG != 0
 
 #include "service/Debug/Debug.h"
 

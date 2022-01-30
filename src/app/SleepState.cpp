@@ -32,10 +32,10 @@
 
 #include "app/SleepState.h"
 #include "app/UpdateState.h"
+#include "app/Parameter.h"
 
 #include "service/Debug/Debug.h"
 #include "service/Power/Power.h"
-
 namespace app
 {
     static SleepState sleepState;
@@ -53,11 +53,10 @@ namespace app
     
     void SleepState::process(StateHandler& stateHandler)
     {
-        /** sleep one day
-         */
-        //uint16_t loops((24ul*60ul*60ul*1000ul) / service::Power::getSleepDurationMs());
+        /* sleep x minutes*/
+        uint32_t loops(Parameter::getInterval()); /* get minutes to sleep */
 
-        uint16_t loops(1);
+        loops = (loops * 60000ul) / service::Power::getSleepDurationMs();
 
         while (loops--)
         {

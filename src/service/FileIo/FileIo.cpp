@@ -34,7 +34,6 @@
 
 #include "service/Power/Power.h"
 #include "service/Debug/Debug.h"
-
 #include "service/FatFS/source/ff.h"
 #include "service/FatFS/source/diskio.h"
 
@@ -96,9 +95,7 @@ namespace service
                 }
             }
         }
-
-        service::Power::disable(service::Power::POW_SDCARD);
-
+        
         return FIO_READY == g_status;
     }
 

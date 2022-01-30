@@ -51,7 +51,7 @@ namespace app
 
     void UpdateState::process(StateHandler& stateHandler)
     {
-        DEBUG_LOGP("Power: %d mV (ref %d): \r\n",
+        DEBUG_LOGP("Power: %d mV (ref: %d): \r\n",
                 service::Power::getSupplyVoltage_mV(),
                 service::Power::getReferenceVoltage_mV());
                 
@@ -80,7 +80,6 @@ namespace app
                 uint32_t total(0);
 
                 do {
-
                     service::FileIo::read(g_iobuf, sizeof(g_iobuf), readRet);
                     if (0u != readRet)
                     {

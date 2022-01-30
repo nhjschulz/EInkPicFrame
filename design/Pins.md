@@ -26,7 +26,7 @@ The page lists the used pin assignment to/from the microcontroller.
 |18| PB4  | SPI MISO          | output               |
 |19| PB5  | SPI CLK           | output               |
 |20| AVCC | Power             | VCC                  |
-|21| AREF | Power             | VCC                  |
+|21| AREF | 100nF Capacitor   |                      |
 |22| GND  | Power             | GND                  |
 |23| PC0  | NC                |                      |
 |24| PC1  | NC                |                      |

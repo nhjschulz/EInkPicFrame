@@ -31,6 +31,8 @@
  */
 #include "service/Power/Power.h"
 
+#include "service/Debug/Debug.h"
+
 #include "hal/Cpu/Cpu.h"
 #include "hal/Gpio/Gpio.h"
 #include "hal/Spi/Spi.h"
@@ -38,9 +40,6 @@
 #include "hal/Uart/Uart.h"
 #include "hal/Timer/WakeUpTimer.h"
 #include "hal/Adc/Adc.h"
-#include "service/FileIo/FileIo.h"
-#include "service/Debug/Debug.h"
-
 
 extern "C" void disk_timerproc (void);
 
@@ -135,4 +134,10 @@ namespace service
         hal::Cpu::irqEnable();
     }
 
+    void Power::setCalibrationVoltages(
+                uint16_t refVoltage_mV,
+                uint16_t supVoltage_mv)
+    {
+        hal::Adc::calibrate(refVoltage_mV, supVoltage_mv);
+    }
 }

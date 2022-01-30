@@ -73,7 +73,6 @@ namespace service
          * In our case we are woken up by the WakeTimer, get its max interval.
          */
         static uint16_t getSleepDurationMs()
-
         {
             return hal::WakeUpTimer::WAKEUP_INTERVAl_MS;
         }
@@ -127,6 +126,16 @@ namespace service
         {
             return hal::Adc::readChannel(hal::Adc::ADC_CHN_CALIBRATION_MV);
         }
+
+        /**
+         * @brief Set the voltage parameter used for ADC calibration.
+         * 
+         * @param refVoltage_mV  Voltage on AVCC pin for calibration
+         * @param supVoltage_mv  Calibrated reference voltage
+         */
+        static void setCalibrationVoltages(
+                uint16_t refVoltage_mV,
+                uint16_t supVoltage_mv);
 
         private:
             Power(const Power&);

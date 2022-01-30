@@ -19,7 +19,7 @@ The project is build using only opensource software tools, which are available f
 |Tool                  |   Usage                   | Version   | Link                                                           |
 |----------------------|---------------------------|-----------|---------------------------------------------------------------------|
 | Visual Studio Code   | Editor and IDE            | 1.63.2    | [https://code.visualstudio.com/](https://code.visualstudio.com/)   |
-| PlatformIO           | Softwate bUild tools      | 5.2.4     | [https://code.visualstudio.com/](https://platformio.org/)          |
+| PlatformIO           | Softwate bUild tools      | 5.2.4     | [https://platformio.org/](https://platformio.org/)          |
 | Python               | Script programming        | 3.10.1    | [https://www.python.org/](https://www.python.org/)                 |
 | GIMP                 | Image Manipulation        | 2.10.30   | [https://www.gimp.org/](https://www.gimp.org/)                     |
 | GIT                  | Version Control           | 2.19      | [https://git-scm.com/](https://git-scm.com/)                       |
@@ -28,11 +28,12 @@ The project is build using only opensource software tools, which are available f
 ## Software Architecture
 
 The implemented software architecture design is shown on the [Software Architecture](design/SwArchitecture.md) page.
+
 ## Hardware
 
-The system is assembled using the following parts: [Partlist](design/Parts.md)
+The system is assembled using the following parts: [Partlist](design/Parts.md).
+Pin assignment for the microcontroller is defined here: [Pin Usage](design/Pins.md).
 The PCB was designed using [KiCAD](https://www.kicad.org/). The design files are in the hw folder.
-
 
 ## Prototype Progress
 
@@ -41,4 +42,3 @@ The PCB was designed using [KiCAD](https://www.kicad.org/). The design files are
 
 * 2021-01-22: V1 PCBs arrived and work
   ![PCBv1](design/history/pcb_v1.png)
-
