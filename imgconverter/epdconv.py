@@ -30,15 +30,55 @@ This will create img00.epd and img001.epd on success.
 import os
 from PIL import Image
 
-# required image size
+# Required image size
 WIDTH=600
 HEIGHT=448
 COLORS=8
 
-def convert(filename, im : Image):
+# Default palette index mapping
+# Images may contain the palette colors in arbitrary order and
+# need to be mapped to match with the fixed EPD one
+#
+palette_index_map = list(range(COLORS))
+
+# Expected colors from the E-Paper.gpl palette file and
+# their matching index values for the EPD
+#
+epd_palette = {
+    (  0,   0,   0) : 0, # black
+    (255, 255, 255) : 1, # white
+    ( 67, 138,  28) : 2, # green
+    (100,  64, 255) : 3, # blue
+    (191,   0,   0) : 4, # red
+    (255, 243,  56) : 5, # yellow
+    (232, 126,   0) : 6, # orange
+    (194, 164, 244) : 7  # (clear, some sort of light blue)
+}
+
+def map_palette(im : Image): 
+    "Map the image palette colors to be in the order expected by the EPD"
+
+    palette = im.palette
+
+    if (palette is None):
+        raise Exception("image has no color palette")
+    
+    data = palette.palette   # get rgb byte array
+    length = len(data) // 3
+    if (COLORS != length) :
+        raise Exception("wrong palette length {}".format(length))
+
+    # setup mapping of palette indexes to EPD pixel value
+    for i in range(0, COLORS * 3, 3):
+        rgb = (data[i], data[i + 1], data[i + 2])
+        palette_index_map[i//3] = epd_palette[rgb]
+
+def convert(filename, im : Image) :
     "convert image into epd  format and write it into a epd file"
 
     try:
+        map_palette(im)
+
         outname = os.path.splitext(filename)[0] + '.epd'
         imgfile = open(outname, "wb")
 
@@ -49,9 +89,9 @@ def convert(filename, im : Image):
                 ph = im.getpixel((x, y))
                 pl = im.getpixel((x + 1, y))
                 if ((COLORS <= ph) or (COLORS <= pl)) :
-                    raise Exception("Color index out of range")
+                    raise Exception("color index out of range")
 
-                val = ((ph << 4) | pl)
+                val = ((palette_index_map[ph] << 4) | palette_index_map[pl])
                 data.append(val)
 
         imgfile.write(data) 
