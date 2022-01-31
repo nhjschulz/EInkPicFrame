@@ -1,31 +1,32 @@
 @startuml StateMachine
 
-[*] -r-> Init : Power On
-Init -->  Update
+[*] -> Init : Power On
+Init --->  Update : [supply Voltage >= Param.minVoltage]
+Init --> LowBattery : [supply Voltage < Param.minVoltage]
+
 
 Update -> Sleep : Update done
-Sleep -l> Update : Wakeup time passed
-
+Sleep -> LowBattery :  Voltage < minVoltage
+Sleep-l-> Update : Resume
 Update -d-> Error : Error occured
 Sleep -d-> Error : Error occured
 
-Update --> LowBatteryHalt : Low voltage level reached
-Error -d-> [*] : halt
-LowBatteryHalt -d->[*] : halt
+Error --> [*] : halt
+LowBattery -d-> Error: Error occured
+LowBattery -l> Update: Voltage > minVoltage
 Init: /enter initSystem()
-Init: /process setState(Update)
+Init: /process determineNextState()
 
 Error: /enter DisplayErrImage()
 Error: /process halt()
 
-Update: /process checkVoltage()
 Update: /process displayNextImage()
 
 Sleep: /enter suspendDevices()
 Sleep: /process sleep( Wakeup time period)
 Sleep: /leave resumeDevices()
 
-LowBatteryHalt: /entry DisplayLowBatImage()
-LowBatteryHalt: /process halt()
+LowBattery: /entry DisplayLowBatImage()
+LowBattery: /process sleepAndMonitorVoltage()
 
 @enduml
