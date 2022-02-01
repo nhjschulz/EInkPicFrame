@@ -41,6 +41,20 @@ namespace service
         public:
 
         /**
+         * @brief size of shared io buffer.
+         * 
+         */
+        static const uint8_t SHARED_BUF_SIZE = 100u;
+
+        /**
+         * @brief Shared data buffer for file IO
+         * 
+         * A shared buffer is used to reduce precious RAM consumption
+         * on the AVR 328P. 
+         */
+        static uint8_t iobuf[SHARED_BUF_SIZE];
+
+        /**
          * @brief Enable file IO access
          * 
          * Power SD Card modul and initialze it
@@ -70,7 +84,7 @@ namespace service
          * @return true 
          * @return false 
          */
-        static bool open();
+        static bool open(const char * fname = getFileName());
 
         /**
          * @brief closde current file
@@ -99,6 +113,11 @@ namespace service
          */
         static bool read(uint8_t * buf, uint16_t size, uint16_t& read);
 
+        /**
+         * @brief Get the current filename for diretory iterating
+         * 
+         * @return const char*  next filename
+         */
         static const char * getFileName();
 
         private:

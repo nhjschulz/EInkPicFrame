@@ -61,12 +61,7 @@ namespace app
             static uint16_t getInterval(void);
 
             /**
-             * @brief Get the Min Voltage 
-             * 
-             * Lower voltage limit value in mV. Processing stops with
-             * charge indication if voltage drops below this value.
-             * Values below 3300 mV are pointless, as peripherals
-             * need it.
+             * @brief Get the Min Voltage parameter
              * 
              * @return uint16_t minimal operation voltage.
              */

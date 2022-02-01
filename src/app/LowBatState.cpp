@@ -30,53 +30,54 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "app/UpdateState.h"
+#include "app/LowBatState.h"
 
-#include "service/Power/Power.h"
 #include "service/Display/Display.h"
 #include "service/FileIo/FileIo.h"
+#include "service/Power/Power.h"
 #include "service/Debug/Debug.h"
-#include "app/ErrorState.h"
-#include "app/SleepState.h"
+#include "app/Parameter.h"
+#include "app/UpdateState.h"
+
+#include <avr/pgmspace.h>
 
 namespace app
 {
-    static UpdateState g_updateState;
+    /**
+     * @brief this state singleton
+     */
+    static LowBatState g_lowBatState;
 
-    UpdateState& UpdateState::instance()
+    /**
+     * @brief location of low battery EPD img
+     */
+    static const char g_lowBatImgFile[] PROGMEM = "/epd/err/lb.epd";
+
+    LowBatState& LowBatState::instance()
     {
-        return g_updateState;
+        return g_lowBatState;
     }
 
-    void UpdateState::process(StateHandler& stateHandler)
+    void LowBatState::enter(void)
     {
-        DEBUG_LOGP("Power: %d mV (ref: %d): \r\n",
-                service::Power::getSupplyVoltage_mV(),
-                service::Power::getReferenceVoltage_mV());
+        DEBUG_LOGP("Enter LowBat: %d mV \r\n",
+                service::Power::getSupplyVoltage_mV());
                 
-        bool errorOccured(false) ;
-
+        /* display low battery image on EPD 
+         */
         service::Power::enable(service::Power::POW_DISPLAY);
-        DEBUG_LOGP("Epd::init()...");
         service::Epd::init();
-        DEBUG_LOGP("done\r\n");
-
-        // clear takes as long as redraw and doesn't seem to be necessary.
-        // service::Epd::clear(service::Epd::CLEAN);
 
         if (service::FileIo::enable())
         {
-            DEBUG_LOGP("File %s\r\n", service::FileIo::getFileName());
-            
-            DEBUG_LOGP("Epd::beginPaint()...");
+            char path[sizeof(g_lowBatImgFile)];
+            strcpy_P(path, g_lowBatImgFile);
 
-            service::Epd::beginPaint();
-            DEBUG_LOGP("done\r\n");
-
-            if (service::FileIo::open())
+            if (service::FileIo::open(path))
             {
                 uint16_t readRet(0u);
-                uint32_t total(0);
+
+                service::Epd::beginPaint();
 
                 do {
                     service::FileIo::read(
@@ -86,43 +87,52 @@ namespace app
                     if (0u != readRet)
                     {
                         service::Epd::sendBlock(
-                            service::FileIo::iobuf, readRet);
-                        total += readRet;
+                            service::FileIo::iobuf,
+                            readRet);
                     }
                 } while (0u != readRet);
 
                 service::FileIo::close();
-
-                DEBUG_LOGP("read %ld\r\n", total);
+                service::Epd::endPaint();
             }
-            
-            if (!service::FileIo::next())
-            {
-                DEBUG_LOGP("no next\r\n");
-                errorOccured = true;
-            }
+        }
+        
+        service::Epd::sleep();
+        service::FileIo::disable();
+        service::Power::disable(service::Power::POW_DISPLAY);
+    }
 
-            service::FileIo::disable();
+    void LowBatState::process(StateHandler& stateHandler)
+    {
+        /* sleep 10min before checking power state again.
+         */
+        uint32_t loops((10u * 60u * 1000u) /
+            service::Power::getSleepDurationMs());
 
-            DEBUG_LOGP("Epd::endPaint()...");
-            service::Epd::endPaint();
-            DEBUG_LOGP("done\r\n");
-            service::Epd::sleep();
+        service::Power::suspend();
+
+        while(loops--)
+        {
+            service::Power::sleep();
+        }
+    
+        service::Power::resume();
+
+
+        /* Resume if supply power is 50 mV higher than the low voltage
+         * level. Likely a charger is attached in this case.
+         */ 
+        uint16_t power(service::Power::getSupplyVoltage_mV());
+
+        if ((Parameter::getMinVoltage() + 50u) <= power)
+        {
+            DEBUG_LOGP("Leaving LowBat: %d mV \r\n",power);
+
+            stateHandler.setState(UpdateState::instance());
         }
         else
         {
-            errorOccured = true;
-        }
-
-        if (errorOccured)
-        {
-            stateHandler.setState(ErrorState::instance());
-        }
-        else
-        {
-            stateHandler.setState(SleepState::instance());
-            service::Power::disable(service::Power::POW_DISPLAY);
-
+            DEBUG_LOGP("LowBat: %d mV \r\n",power);
         }
     }
 }

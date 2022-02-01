@@ -65,6 +65,8 @@ static const char g_dirPath[] = "/epd";
 *******************************************************************************/
 namespace service
 {
+    uint8_t FileIo::iobuf[service::FileIo::SHARED_BUF_SIZE];
+
     bool FileIo::init(void)
     {
         g_enable = false;
@@ -113,7 +115,6 @@ namespace service
             return false;
         }
 
-
         FRESULT res(f_findnext(&g_dir, &g_fno));
         DEBUG_LOGP("FileIo f_findnext-> %d\r\n", res);
 
@@ -149,11 +150,11 @@ namespace service
         return g_fno.fname;
     }
 
-    bool FileIo::open()
+    bool FileIo::open(const char * fname)
     {
         if (FIO_READY == g_status)
         {
-            FRESULT res(f_open(&g_fil, getFileName(), FA_READ));
+            FRESULT res(f_open(&g_fil, fname, FA_READ));
             DEBUG_LOGP("FileIo::f_open() -> %d\r\n", res);
 
             if (FR_OK == res)
@@ -171,6 +172,9 @@ namespace service
         {
             FRESULT res(f_close(&g_fil));
             DEBUG_LOGP("FileIo::f_close() -> %d\r\n", res);
+            /* expect data in epd directory */
+            res = f_chdir(g_dirPath);
+            DEBUG_LOGP("FileIo f_chdir-> %d\r\n", res);
 
             if (FR_OK == res)
             {

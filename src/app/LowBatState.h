@@ -30,63 +30,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "app/InitState.h"
-#include "app/UpdateState.h"
-#include "app/ErrorState.h"
-#include "app/LowBatState.h"
-#include "app/Parameter.h"
+#ifndef LOWBATSTATE_H_INCLUDED
+#define LOWBATSTATE_H_INCLUDED
 
-#include "service/ServiceInit.h"
-#include "service/FileIo/FileIo.h"
-#include "service/Power/Power.h"
-#include "service/Led/Led.h"
+#include "app/BaseState.h"
 
 namespace app
 {
-
-    static InitState initState;
-
-    InitState& InitState::instance()
+    /**
+     * @brief Low battery voltage processing
+     * 
+     */
+    class LowBatState : public BaseState
     {
-        return initState;
-    }
+        public:
+        static LowBatState& instance();
 
-    void InitState::enter(void)
-    {
-        service::init();
-        service::Led::enable();
-        service::Power::resume();
-        service::Power::idle(50);
-        service::Led::disable();
-    }
-
-    void InitState::process(StateHandler& stateHandler)
-    {
-        if (!service::FileIo::init())
-        {
-            stateHandler.setState(ErrorState::instance());
-        }
-        else
-        {
-            Parameter::init();
-            service::Power::setCalibrationVoltages(
-                    Parameter::getRefVoltage(),
-                    Parameter::getCalVoltage()
-            );
-            
-            /* check for sufficient supply voltage
-             */
-            uint16_t supplyVoltage(service::Power::getSupplyVoltage_mV());
-
-
-            if (supplyVoltage < Parameter::getMinVoltage())
-            {
-                stateHandler.setState(LowBatState::instance());
-            }
-            else
-            {
-                stateHandler.setState(UpdateState::instance());
-            }
-        }
-    }
+        public:
+            virtual void enter(void);
+            virtual void process(StateHandler& stateHandler);
+    };
 }
+
+#endif /* LOWBATSTATE_H_INCLUDED */

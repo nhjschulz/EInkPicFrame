@@ -32,6 +32,7 @@
 
 #include "app/SleepState.h"
 #include "app/UpdateState.h"
+#include "app/LowBatState.h"
 #include "app/Parameter.h"
 
 #include "service/Debug/Debug.h"
@@ -63,12 +64,23 @@ namespace app
             service::Power::sleep();
         }
 
-        stateHandler.setState(UpdateState::instance());
+        service::Power::resume();
+
+        /* check for sufficient supply voltage
+         */
+        uint16_t supplyVoltage(service::Power::getSupplyVoltage_mV());
+        if (supplyVoltage < Parameter::getMinVoltage())
+        {
+            stateHandler.setState(LowBatState::instance());
+        }
+        else
+        {
+            stateHandler.setState(UpdateState::instance());
+        }
     }
 
     void SleepState::leave(void)
     {
-        service::Power::resume();
         DEBUG_LOGP("Wakeup()\r\n");
     }
 }

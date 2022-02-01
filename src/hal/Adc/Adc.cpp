@@ -92,6 +92,10 @@ namespace hal
 
         _delay_us(500);    /* wait for selected voltages to stabilize */
 
+        /* dummy read as first result may be inaccurate.
+         */
+        triggerConversion(ADC_CHN_SUPPLY_VOLTAGE_MV); 
+
     }
 
     uint16_t Adc::readChannel(Adc::AdcChannel channel)
