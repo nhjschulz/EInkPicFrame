@@ -52,7 +52,7 @@ epd_palette = {
     (191,   0,   0) : 4, # red
     (255, 243,  56) : 5, # yellow
     (232, 126,   0) : 6, # orange
-    (194, 164, 244) : 7  # (clear, some sort of light blue)
+    (200, 200, 216) : 7  # (clear)
 }
 
 def map_palette(im : Image): 
