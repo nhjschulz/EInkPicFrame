@@ -7,8 +7,8 @@ A low power battery driven picture frame with a 7 color E-Ink display.
 This is a hobbyist project. I have >20 years background in software development,
 but lack the electronic engineering background. I'm using this project to
 clear the fog in these mysterious regions below a HAL software layer. The project
-therefore includes a hardware design as well. Keep this in mind when rebuilding
-you plan to rebuild it. As with any open source, you use this AT YOUR OWN RISK!.
+therefore includes a hardware design as well. Keep this in mind if you plan to
+rebuild it. As with any open source, you use this AT YOUR OWN RISK!.
 ## Requirements
 
 A set of project requirements is collected here: [Requirements](design/Requirements.md)
