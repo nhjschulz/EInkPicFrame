@@ -1,7 +1,14 @@
 # EInkPicFrame (Work In Progress)
 
-A battery powered picture frame using color E-Ink display.
+A low power battery driven picture frame with a 7 color E-Ink display.
 
+![Frame One](design/history/frame1.png)
+
+This is a hobbyist project. I have >20 years background in software development,
+but lack the electronic engineering background. I'm using this project to
+clear the fog in these mysterious regions below a HAL software layer. The project
+therefore includes a hardware design as well. Keep this in mind when rebuilding
+you plan to rebuild it. As with any open source, you use this AT YOUR OWN RISK!.
 ## Requirements
 
 A set of project requirements is collected here: [Requirements](design/Requirements.md)
@@ -14,7 +21,7 @@ Block diagram of the system:
 
 ## Used Tools
 
-The project is build using only opensource software tools, which are available for free. The following table shows the tools and versions used during development:
+The project is build using open source tools only. All of them are available for free. The following table shows the tools and versions used during development:
 
 |Tool                  |   Usage                   | Version   | Link                                                           |
 |----------------------|---------------------------|-----------|---------------------------------------------------------------------|
@@ -32,7 +39,9 @@ The implemented software architecture design is shown on the [Software Architect
 ## Hardware
 
 The system is assembled using the following parts: [Partlist](design/Parts.md).
+
 Pin assignment for the microcontroller is defined here: [Pin Usage](design/Pins.md).
+
 The PCB was designed using [KiCAD](https://www.kicad.org/). The design files are in the hw folder.
 
 ## Prototype Progress
@@ -42,3 +51,10 @@ The PCB was designed using [KiCAD](https://www.kicad.org/). The design files are
 
 * 2021-01-22: V1 PCBs arrived and work
   ![PCBv1](design/history/pcb_v1.png)
+
+* 2022-02-01: First frame starts long run test in the living room
+  ![Frame One](design/history/frame1.png)
+
+  Back side:
+
+  ![Back](design/history/frameBG.png)
