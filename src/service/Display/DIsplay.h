@@ -37,7 +37,7 @@
 
 namespace service 
 {
-    /** DIsplay driver for Waveshare EPD_5IN65F 7 Color E-Paper Display
+    /** Display driver for Waveshare EPD_5IN65F 7 Color E-Paper Display
      */
     class Epd 
     {
