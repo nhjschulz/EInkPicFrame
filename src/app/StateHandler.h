@@ -40,7 +40,7 @@ namespace app
     class StateHandler
     {
         public:    
-            StateHandler(IState& initialState);
+            explicit StateHandler(IState& initialState);
             ~StateHandler() {}
 
             /** Transition to new state after processing

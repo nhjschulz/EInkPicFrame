@@ -89,7 +89,7 @@ namespace hal
         inline static void setDispPow()      { PORTD |=  _BV(DISP_POW);   }
         inline static void clrDispPow()      { PORTD &= ~_BV(DISP_POW);   }
 
-        inline static bool getDispBusy()     { return (PIND & _BV(DISP_BUSY) ? true : false ); }
+        inline static bool getDispBusy()     { return (PIND & _BV(DISP_BUSY)) ? true : false ; }
     };
 }
 #endif /* GPIO_H_INCLUDED */

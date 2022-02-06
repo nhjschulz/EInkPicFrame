@@ -47,7 +47,7 @@ namespace app
             static ErrorState& instance();
 
         public:
-            virtual void enter();
+            virtual void enter() override;
     };
 }
 

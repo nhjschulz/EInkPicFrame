@@ -47,8 +47,8 @@ namespace app
         static LowBatState& instance();
 
         public:
-            virtual void enter(void);
-            virtual void process(StateHandler& stateHandler);
+            virtual void enter(void) override;
+            virtual void process(StateHandler& stateHandler) override;
     };
 }
 

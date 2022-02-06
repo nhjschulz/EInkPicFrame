@@ -47,7 +47,7 @@ namespace app
         static UpdateState& instance();
 
         public:
-            virtual void process(StateHandler& stateHandler);
+            virtual void process(StateHandler& stateHandler) override;
     };
 }
 

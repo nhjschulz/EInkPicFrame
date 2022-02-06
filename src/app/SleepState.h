@@ -47,9 +47,9 @@ namespace app
             static SleepState& instance();
 
         public:
-            virtual void enter();
-            virtual void process(StateHandler& stateHandler);
-            virtual void leave();
+            virtual void enter() override;
+            virtual void process(StateHandler& stateHandler) override;
+            virtual void leave() override;
     };
 }
 

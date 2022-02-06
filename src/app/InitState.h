@@ -47,8 +47,8 @@ namespace app
             static InitState& instance();
 
         public:
-            virtual void enter();
-            virtual void process(StateHandler& stateHandler);
+            virtual void enter() override;
+            virtual void process(StateHandler& stateHandler) override;
     };
 }
 

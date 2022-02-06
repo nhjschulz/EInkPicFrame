@@ -43,13 +43,20 @@ namespace app
     class BaseState : public IState
     {
         public:
-            virtual void enter()   {}
-            virtual void process(StateHandler& stateHandler)
+            virtual void enter() override
+            {
+
+            }
+
+            virtual void process(StateHandler& stateHandler) override
             {
                 (void)stateHandler;
             }
             
-            virtual void leave()   {}
+            virtual void leave() override
+            {
+                
+            }
     };
 }
 #endif /*BASESTATE_H_INCLUDED */
