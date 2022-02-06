@@ -44,6 +44,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install --upgrade platformio
       - name: Run PlatformIO
-        run: pio run -e <ID_1> -e ATmega328P
+        run: pio run -e ATmega328P
       - name: Run cppcheck
         run: pio check -e ATmega328P
