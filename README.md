@@ -1,4 +1,4 @@
-# EInkPicFrame (Work In Progress)
+# EInkPicFrame
 
 A low power battery driven picture frame with a 7 color E-Ink display.
 
@@ -9,6 +9,7 @@ but lack the electronic engineering background. I'm using this project to
 clear the fog in these mysterious regions below a HAL software layer. The project
 therefore includes a hardware design as well. Keep this in mind if you plan to
 rebuild it. As with any open source, you use this AT YOUR OWN RISK!.
+
 ## Requirements
 
 A set of project requirements is collected here: [Requirements](design/Requirements.md)
@@ -39,10 +40,8 @@ The implemented software architecture design is shown on the [Software Architect
 ## Hardware
 
 The system is assembled using the following parts: [Partlist](design/Parts.md).
-
-Pin assignment for the microcontroller is defined here: [Pin Usage](design/Pins.md).
-
-The PCB was designed using [KiCAD](https://www.kicad.org/). The design files are in the hw folder.
+A descripion of the PCB developed for this project is described
+here: [PCB](design/hardware.md).
 
 ## Prototype Progress
 
