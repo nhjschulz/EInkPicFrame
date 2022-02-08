@@ -1,6 +1,10 @@
 # EInkPicFrame
 
-A low power battery driven picture frame with a 7 color E-Ink display.
+The project builds an electronic picture frame using a 7 color E-Ink display.
+It updates after an adjustable time period by reading images from an SD-Card. 
+The frame is powered from a battery and mimics a real picture frame by requiring
+no power cable or a backlight. The software and hardware implements various power
+saving methods to run for a long time without recharging.  
 
 ![Frame One](design/history/frame1.png)
 
@@ -24,12 +28,13 @@ Block diagram of the system:
 
 The project is build using open source tools only. All of them are available for free. The following table shows the tools and versions used during development:
 
-|Tool                  |   Usage                   | Version   | Link                                                           |
-|----------------------|---------------------------|-----------|---------------------------------------------------------------------|
+|Tool                  |   Usage                   | Version   | Link                                                               |
+|----------------------|---------------------------|-----------|--------------------------------------------------------------------|
 | Visual Studio Code   | Editor and IDE            | 1.63.2    | [https://code.visualstudio.com/](https://code.visualstudio.com/)   |
-| PlatformIO           | Softwate bUild tools      | 5.2.4     | [https://platformio.org/](https://platformio.org/)          |
+| PlatformIO           | Softwate bUild tools      | 5.2.4     | [https://platformio.org/](https://platformio.org/)                 |
 | Python               | Script programming        | 3.10.1    | [https://www.python.org/](https://www.python.org/)                 |
 | GIMP                 | Image Manipulation        | 2.10.30   | [https://www.gimp.org/](https://www.gimp.org/)                     |
+| ImageMagick          | Image Manipulation        | 7.1.0     | [https://imagemagick.org/](https://imagemagick.org/)               |
 | GIT                  | Version Control           | 2.19      | [https://git-scm.com/](https://git-scm.com/)                       |
 | KiCad EDA            | Hardware Design           | 5.1.12    | [https://www.kicad.org//](https://www.kicad.org/)                  |
 
@@ -42,6 +47,11 @@ The implemented software architecture design is shown on the [Software Architect
 The system is assembled using the following parts: [Partlist](design/Parts.md).
 A descripion of the PCB developed for this project is described
 here: [PCB](design/hardware.md).
+
+## Image Generation
+
+The images to show on the frame must be in a special raw format. The process to generate this format is
+described on the [ImageConverter](imgconverter/howto.md) page.
 
 ## Prototype Progress
 
