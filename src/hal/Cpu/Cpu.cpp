@@ -64,7 +64,7 @@ namespace hal
         sleep_disable();
     }   
 
-    void Cpu::powerSafe(void)
+    void Cpu::enterPowerSave(void)
     {
         irqDisable();
 
@@ -76,7 +76,12 @@ namespace hal
         sleep_disable();
     }
 
-    void Cpu::idle(uint8_t ticks)
+    uint8_t Cpu::getIdleTickTime_ms()
+    {
+        return TickTimer::TICK_TIME_MS;
+    }
+    
+    void Cpu::enterIdle(uint8_t ticks)
     {
         uint8_t currTicks(TickTimer::getTickCount());
         uint8_t delta;

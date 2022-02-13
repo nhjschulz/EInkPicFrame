@@ -48,6 +48,15 @@ namespace app
 
         public:
             virtual void process(StateHandler& stateHandler) override;
+
+        protected:
+            /**
+             * @brief Update screen with next picture
+             * 
+             * @return true 
+             * @return false 
+             */
+            virtual bool updateScreen(void);
     };
 }
 

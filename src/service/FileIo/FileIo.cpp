@@ -37,6 +37,10 @@
 #include "service/FatFS/source/ff.h"
 #include "service/FatFS/source/diskio.h"
 
+/**
+ * @brief Internal state of file system access
+ * 
+ */
 enum FileIoStatus
 {
     FIO_RESET,
@@ -58,7 +62,7 @@ static FIL      g_fil;    /**< open file handle                  */
 static bool     g_enable; /**< true if enabled                   */
 
 static const char g_fnPattern[] = "*.epd";
-static const char g_dirPath[] = "/epd";
+static const char g_dirPath[] = "/epd/img";
 
 /*******************************************************************************
     Implementation

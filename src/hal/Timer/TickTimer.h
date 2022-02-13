@@ -37,13 +37,19 @@
 
 namespace hal
 {
-    /** Timer 0  Driver for AVR 328P (10ms interval)
+    /** Timer 0 Driver for AVR 328P (10ms interval)
     */
     class TickTimer 
     {
         public:
 
-            /** User installable callback function, called every tick
+            /**
+             * @brief Time between ticks in ms
+             * 
+             */
+            static const uint8_t TICK_TIME_MS = 10u;
+
+            /** User callback function, called every tick
              */
             typedef void (*TickFunctionCB)(void);
 
@@ -82,7 +88,7 @@ namespace hal
              */
             friend void incTickIsr(void);
 
-            static uint8_t m_ticks;
+            static volatile uint8_t m_ticks;
 
         private:
             TickTimer(const TickTimer&);

@@ -33,7 +33,7 @@
 #include "hal/Spi/Spi.h"
 #include "hal/Cpu/Cpu.h"
 #include "service/Display/Display.h"
-
+#include "service/Debug/Debug.h"
 
 namespace service 
 {
@@ -143,27 +143,34 @@ namespace service
      */
     static const uint8_t RE3_cmdPWS[] PROGMEM = { 0xE3, 0xAA };
 
-    void Epd::init(void) 
+    bool Epd::init(void) 
     { 
+        bool result(false);
 
         configureSpi();
 
         reset();
-        waitForIdle(); 
 
-        sendCmd_P(R00_cmdPSR, sizeof(R00_cmdPSR));
-        sendCmd_P(R01_cmdPWR, sizeof(R01_cmdPWR));
-        sendCmd_P(R03_cmdPFS, sizeof(R03_cmdPFS));
-        sendCmd_P(R06_cmdBTST, sizeof(R06_cmdBTST));
-        sendCmd_P(R30_cmdPLL, sizeof(R30_cmdPLL));
-        sendCmd_P(R41_cmdTSE,sizeof(R41_cmdTSE));
-        sendCmd_P(R50_cmdCDI, sizeof(R50_cmdCDI));
-        sendCmd_P(R60_cmdTCON, sizeof(R60_cmdTCON));
-        sendCmd_P(R61_cmdTRES, sizeof(R61_cmdTRES));
-    	sendCmd_P(RE3_cmdPWS, sizeof(RE3_cmdPWS));
+        if (waitForIdle(100u)) 
+        {
+            sendCmd_P(R00_cmdPSR, sizeof(R00_cmdPSR));
+            sendCmd_P(R01_cmdPWR, sizeof(R01_cmdPWR));
+            sendCmd_P(R03_cmdPFS, sizeof(R03_cmdPFS));
+            sendCmd_P(R06_cmdBTST, sizeof(R06_cmdBTST));
+            sendCmd_P(R30_cmdPLL, sizeof(R30_cmdPLL));
+            sendCmd_P(R41_cmdTSE,sizeof(R41_cmdTSE));
+            sendCmd_P(R50_cmdCDI, sizeof(R50_cmdCDI));
+            sendCmd_P(R60_cmdTCON, sizeof(R60_cmdTCON));
+            sendCmd_P(R61_cmdTRES, sizeof(R61_cmdTRES));
+    	    sendCmd_P(RE3_cmdPWS, sizeof(RE3_cmdPWS));
 
-        hal::Cpu::idle(10);
-        sendCmd_P(R50_cmdCDI, sizeof(R50_cmdCDI));
+            hal::Cpu::enterIdle(10);
+            sendCmd_P(R50_cmdCDI, sizeof(R50_cmdCDI));
+
+            result = true;
+        }
+
+        return result;
     }
 
 
@@ -183,21 +190,40 @@ namespace service
         }
     }
 
-    void Epd::waitForIdle(void)// If BUSYN=0 then waiting
+    bool Epd::waitForIdle(uint8_t tmo_ms)
     {
+        tmo_ms /= hal::Cpu::getIdleTickTime_ms();
+
         do
         {
-            hal::Cpu::idle(1);
-        } while(!(hal::Gpio::getDispBusy()));
+            hal::Cpu::enterIdle(1u);
+            if (0u < tmo_ms)
+            {
+                --tmo_ms;
+            }
+
+            /* If BUSYN=0 then waiting */
+        } while((0u < tmo_ms) && (false == hal::Gpio::getDispBusy())); 
+
+        return true == hal::Gpio::getDispBusy();
     }
 
-    void Epd::waitForBusy(void)// If BUSYN=1 then waiting
+    bool Epd::waitForBusy(uint8_t tmo_ms)
     {
+        tmo_ms /= hal::Cpu::getIdleTickTime_ms();
+
         do 
         {
-            hal::Cpu::idle(1);
+            hal::Cpu::enterIdle(1u);
+        if (0u < tmo_ms)
+            {
+                --tmo_ms;
+            }
+            /* If BUSYN=1 then waiting */
         }
-        while(hal::Gpio::getDispBusy());
+        while((0u < tmo_ms) && (true == hal::Gpio::getDispBusy()));
+
+        return false == hal::Gpio::getDispBusy();
     }
 
     void Epd::configureSpi()
@@ -229,24 +255,33 @@ namespace service
         configureSpi();
 
         sendCmd_P(R04_cmdPON, sizeof(R04_cmdPON)); // power on
-        waitForIdle();
+        while(!waitForIdle(100u))
+        {
+
+        }
 
         sendCmd_P(R12_cmdDRF, sizeof(R12_cmdDRF)); // refresh
-        waitForIdle();
+        while(!waitForIdle(255u))
+        {
+
+        }
 
         sendCmd_P(R02_cmdPOF, sizeof(R02_cmdPOF));  // power off
-        waitForBusy();
+        while(!waitForBusy(100u))
+        {
+
+        }
     }
 
     void Epd::reset(void)
     {
         configureSpi();
 
-        hal::Gpio::clrDispReset();                // low = module reset    
+        hal::Gpio::clrDispReset();                /* low = module reset  */
         hal::Cpu::delayMS(1);
 
         hal::Gpio::setDispReset();
-        hal::Cpu::idle(20);    
+        hal::Cpu::enterIdle(20);    
     }
 
     void Epd::clear(Epd::Color color)
@@ -277,6 +312,6 @@ namespace service
         
         sendCmd_P(R07_cmdDSLP, sizeof(R07_cmdDSLP));
 
-        hal::Cpu::idle(10);
+        hal::Cpu::enterIdle(10);
     }
 }

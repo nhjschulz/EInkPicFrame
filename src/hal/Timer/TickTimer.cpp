@@ -51,7 +51,7 @@ hal::TickTimer::TickFunctionCB tickCallback = nullptr;
 
 namespace hal
 {
-    uint8_t TickTimer::m_ticks;
+    volatile uint8_t TickTimer::m_ticks;
 
     void TickTimer::init()
     {
@@ -101,18 +101,4 @@ ISR(TIMER0_COMPA_vect)
     {
         (*tickCallback)();
     }
-#if 0
-    static bool val(true);
-
-    if (val)
-    {
-        hal::Gpio::setDebugTrig();
-    }
-    else
-    {
-        hal::Gpio::clrDebugTrig();
-    }
-    val = !val;
-#endif
-
 }

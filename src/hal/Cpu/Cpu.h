@@ -36,12 +36,21 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <avr/pgmspace.h>
+
 namespace hal
 {
+    /**
+     * @brief CPU related services
+     * 
+     */
     class Cpu 
     {
         public:
         
+        /**
+         * @brief Clock speed modes
+         * 
+         */
         enum Clock
         {
             CLK_NORMAL,     /**< configure cpu clock for normal operation */
@@ -91,8 +100,15 @@ namespace hal
          * @brief Enter Power save mode
          * 
          */
-        static void powerSafe();
+        static void enterPowerSave();
 
+
+        /**
+         * @brief Get the Idle time for one tick in ms.
+         * 
+         * @return uint8_t  miliseconds per idle tick
+         */
+    	static uint8_t getIdleTickTime_ms();
 
         /* Enter idle until next tickTimer tick 
          * 
@@ -101,7 +117,7 @@ namespace hal
          * 
          * @param ticks How often to enter idle
          */ 
-        static void idle(uint8_t ticks);
+        static void enterIdle(uint8_t ticks);
     };
 }
 #endif /* CPU_H_INCLUDED */

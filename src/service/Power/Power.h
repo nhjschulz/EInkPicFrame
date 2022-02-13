@@ -65,7 +65,7 @@ namespace service
          */
         static void sleep(void)
         {
-            hal::Cpu::powerSafe();
+            hal::Cpu::enterPowerSave();
         }
 
         /** Get sleep duration in ms
@@ -84,7 +84,7 @@ namespace service
          */
         static void idle(uint8_t ticks10ms)
         {
-            hal::Cpu::idle(ticks10ms);
+            hal::Cpu::enterIdle(ticks10ms);
         }
 
         /**

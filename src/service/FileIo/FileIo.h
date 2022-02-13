@@ -36,6 +36,12 @@
 
 namespace service
 {
+    /**
+     * @brief Lightweight abstraction class for FileIO.
+     * 
+     * Abstracts from the used FAT FS implementation to limit
+     * rework in case we'll use another library in future.
+     */
     class FileIo
     {
         public:

@@ -58,11 +58,35 @@ namespace app
 
         service::Power::enable(service::Power::POW_DISPLAY);
         DEBUG_LOGP("Epd::init()...");
-        service::Epd::init();
-        DEBUG_LOGP("done\r\n");
+        if (!service::Epd::init())
+        {
+            DEBUG_LOGP("timeout!!\r\n");
+            errorOccured = true;
+        }
+        else
+        {
+            DEBUG_LOGP("done\r\n");
 
-        // clear takes as long as redraw and doesn't seem to be necessary.
-        // service::Epd::clear(service::Epd::CLEAN);
+            if (!updateScreen())
+            {
+                errorOccured = true;
+            }
+        }
+
+        if (errorOccured)
+        {
+            stateHandler.setState(ErrorState::instance());
+        }
+        else
+        {
+            stateHandler.setState(SleepState::instance());
+            service::Power::disable(service::Power::POW_DISPLAY);
+        }
+    }
+
+    bool UpdateState::updateScreen(void)
+    {
+        bool result(true);
 
         if (service::FileIo::enable())
         {
@@ -99,7 +123,7 @@ namespace app
             if (!service::FileIo::next())
             {
                 DEBUG_LOGP("no next\r\n");
-                errorOccured = true;
+                result = false;
             }
 
             service::FileIo::disable();
@@ -111,18 +135,9 @@ namespace app
         }
         else
         {
-            errorOccured = true;
+            result  = false;
         }
 
-        if (errorOccured)
-        {
-            stateHandler.setState(ErrorState::instance());
-        }
-        else
-        {
-            stateHandler.setState(SleepState::instance());
-            service::Power::disable(service::Power::POW_DISPLAY);
-
-        }
+        return result;
     }
 }

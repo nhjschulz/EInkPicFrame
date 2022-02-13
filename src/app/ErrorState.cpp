@@ -34,7 +34,8 @@
 
 #include "service/Display/Display.h"
 #include "service/Power/Power.h"
-
+#include "service/Led/Led.h"
+#include "service/Debug/Debug.h"
 namespace app
 {
     static ErrorState errorState;
@@ -46,13 +47,31 @@ namespace app
 
     void ErrorState::enter()
     {
-        /* display blank red screen on error
-         */
-        service::Epd::clear(service::Epd::RED);
-        service::Epd::sleep();
+        DEBUG_LOGP("Enter ErrorState\r\n");
+
+        if (service::Epd::init())
+        {
+            /* display blank red screen on error
+             */
+            service::Epd::clear(service::Epd::RED);
+            service::Epd::sleep();
+        }
+        else
+        {
+            for (uint8_t loop(10u); loop; --loop)
+            {
+                service::Led::enable();
+                service::Power::idle(25u);
+                service::Led::disable();
+                service::Power::idle(25u);
+            }
+        }
 
     	/* Game over, shutdown now :( 
          */
+        DEBUG_LOGP("halt\r\n");
+
+        service::Power::suspend();
         service::Power::halt();
     }
 }

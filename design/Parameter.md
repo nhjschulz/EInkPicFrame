@@ -50,8 +50,8 @@ The following table shows the supported parameters:
 
 ## Creating the Parameter File with epdcfg.py
 
-A Python base tool for generating the parameter binary file based 
-on JSON is available in the paramete folder.
+A Python base tool for generating the parameter binary file based
+on JSON is available in the parameter folder.
 It generates the parameter data based on the following JSON record:
 
     {

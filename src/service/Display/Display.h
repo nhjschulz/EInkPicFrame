@@ -59,7 +59,7 @@ namespace service
 
         /** Initialize display after power on 
          */
-        static void init(void);
+        static bool init(void);
 
         /** Reset display
          */
@@ -106,13 +106,23 @@ namespace service
 
     private:
 
-        /** Wait until display becomes idle (BUSYN  high) 
+        /**
+         * @brief Wait until display becomes idle (BUSYN  high) 
+         * 
+         * @param timeOut_ms  timeout period for waiting
+         * @return true  display entered idle
+         * @return false timeout waiting for idle
          */
-        static void waitForIdle(void);
+        static bool waitForIdle(uint8_t timeOut_ms);
 
-        /** Wait until display becomes busy (BUSYN  low) 
+        /**
+         * @brief  Wait until display becomes busy (BUSYN  low) 
+         * 
+         * @param timeOut_ms  timeout period for waiting
+         * @return true  display entered idle
+         * @return false timeout waiting for busy
          */
-        static void waitForBusy(void);
+        static bool waitForBusy(uint8_t timeOut_ms);
 
         /** Send command from program space
          * @param cmd pointer to command byte + cmd data bytes (if any)
