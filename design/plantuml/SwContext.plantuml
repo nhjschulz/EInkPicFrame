@@ -1,7 +1,15 @@
-@startuml Cotext
+@startuml Context
+
+node PC as PC
+
+interface USB as UsbChrger
 
 node EInkFrame {
     node "E-Ink Display" as DISPLAY {
+
+    }
+
+    node Charger as Chrgr {
 
     }
 
@@ -30,9 +38,9 @@ node EInkFrame {
 
     }
 
-    node PC as PC
-
-    BAT --> BOARD : Power
+    UsbChrger ->Chrgr : Power
+    Chrgr -r-> BAT : Power
+    BAT -d-> BOARD : Power
     UC -- SPI
     SPI -- SDCARD : SPI
     SPI -- DISPLAY : SPI
@@ -40,9 +48,9 @@ node EInkFrame {
     UC -- SDFet
     UC -up-> RS232 : Debug
     UC -up-> LED
-    DispFet --> DISPLAY : Power
-    SDFet --> SDCARD : Power
-    UC -- ISP
-    PC -- ISP
+    DispFet -> DISPLAY : Power
+    SDFet -> SDCARD : Power
+    ISP -- UC
+    PC -d- ISP
 }
 @enduml

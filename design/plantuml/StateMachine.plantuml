@@ -1,19 +1,19 @@
 @startuml StateMachine
 
-[*] -> Init : Power On
+[*] -d-> Init : Power On
 Init --->  Update : [supply Voltage >= Param.minVoltage]
 Init --> LowBattery : [supply Voltage < Param.minVoltage]
 
 
 Update -> Sleep : Update done
-Sleep -> LowBattery :  Voltage < minVoltage
+Sleep -> LowBattery : Voltage < minVoltage
 Sleep-l-> Update : Resume
 Update -d-> Error : Error occured
 Sleep -d-> Error : Error occured
 
 Error --> [*] : halt
 LowBattery -d-> Error: Error occured
-LowBattery -l> Update: Voltage > minVoltage
+LowBattery -l-> Update: Voltage > minVoltage
 Init: /enter initSystem()
 Init: /process determineNextState()
 

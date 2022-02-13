@@ -35,16 +35,30 @@ package app {
         LowBatteryState -u-|> AbstractState
     }
 
-    Main -> StateHandler
+    Main -l-> StateHandler
     StateHandler --> AbstractState
 }
 
 package Service {
     class FileIO {
-        +enable(bool)
+        +init()
+        +open()
+        +read()
+        +close()
+        +next()
+        +enable()
+        +disable()
     }
-    class FatFS
+
+    class FatFS {
+        +f_open()
+        +f_close()
+        +f_read()
+        +f_readdir()
+    }
     class ServiceInit {
+        +init()
+        +resume()
       
     }
     class Display {
@@ -54,16 +68,20 @@ package Service {
         +endPaint()
         +sendBlock()
     }
-    class SDCard {
+    class DiskIo {
         +disk_initialize()
         +disk_status()
         +disk_read()
     }
 
-    class Debug
+    class Debug {
+        +DEBUG_INIT()
+        +DEBUG_LOG()
+    }
     
     class Led {
-
+        +enable()
+        +disable()
     }
 
     class Power {
@@ -71,26 +89,37 @@ package Service {
         +disable(Device)
         +halt()
         +idle()
-    }
-
-    class Settings {
-
+        +getVoltage()
     }
 
 }
 
 package Hal {
 
-    class Spi 
-    class Uart {
-        init(Baud,bits, parity, stopBit)
+    class Spi {
+        +enable()
+        +disable()
+        +configure()
+        +exchange()
+    }
 
+    class Uart {
+        +init()
+        +open()
+        +close()
+        +send()
     }
     
-    class HalInit
+    class HalInit {
+        +init()
+    }
+
     class Cpu {
-        +enable(Device, bool)
+        +irqEnable()
         +sleep()
+        +delay()
+        +setClock()
+        +halt()
     }
     class Gpio {
         +init()
@@ -119,31 +148,35 @@ package Hal {
         +readChannel()
     }
 }
-Parameter -> FileIO
 InitState --> ServiceInit
 InitState --> Led
-ServiceInit --> HalInit
-UpdateState --> FileIO
-UpdateState --> Display
+ServiceInit -> HalInit
+UpdateState -> FileIO
+UpdateState -> Display
 SleepState --> Power
 ErrorState --> Power
 UpdateState --> Power
-
+LowBatteryState --> Power
+LowBatteryState ---> FileIO
+app --> Debug
 
 FileIO ->FatFS
-FatFS --> SDCard
-FileIO --> SDCard
+FatFS -d-> DiskIo
+FileIO -> DiskIo
 
-Debug --> Uart
+Debug -> Uart
 Debug --> Gpio
-SDCard --> Spi
+DiskIo --> Spi
 Display --> Spi
 Display --> Gpio
 Power --> Cpu
 Power --> WakeUpTimer
-Power --> Gpio
+Power -> Gpio
 Power ---> Adc
-FatFS --> TickTimer
+DiskIo --> TickTimer
 Led --> Gpio
+
+Parameter --> FileIO
+
 
 @enduml

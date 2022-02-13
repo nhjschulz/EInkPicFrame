@@ -1,7 +1,7 @@
 # EInkPicFrame
 
 The project builds an electronic picture frame using a 7 color E-Ink display.
-It updates after an adjustable time period by reading images from an SD-Card. 
+It updates after an adjustable time period by reading images from an SD-Card.
 The frame is powered from a battery and mimics a real picture frame by requiring
 no power cable or a backlight. The software and hardware implements various power
 saving methods to run for a long time without recharging.  
@@ -45,13 +45,37 @@ The implemented software architecture design is shown on the [Software Architect
 ## Hardware
 
 The system is assembled using the following parts: [Partlist](design/Parts.md).
-A descripion of the PCB developed for this project is described
+
+
+A description of the PCB developed for this project is described
 here: [PCB](design/hardware.md).
 
 ## Image Generation
 
 The images to show on the frame must be in a special raw format. The process to generate this format is
 described on the [ImageConverter](imgconverter/howto.md) page.
+
+
+## File System
+
+The SD Card must be formated using a FAT file system. The software
+expectes a folder with the name "epd" on it. This folder contains
+the following data:
+
+      [epd]
+       |---- [err]
+       |---- [img]
+       |---- epd.cfg
+
+* The folder "err" holds error images that are displayed in case
+  of a problem, like "low battery".
+* The folder img holds your images in epd format.
+* The file epd.cfg are the parameters for the display. See
+  [Parameter File](./design/Parameter.md) for instructions to
+  create it.
+
+An example file system can be copied from the example
+[File System](./design/FileSystem) folder.
 
 ## Prototype Progress
 
