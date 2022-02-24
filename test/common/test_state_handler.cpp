@@ -54,7 +54,7 @@ class StateCallCount : public app::IState
 
         }
         virtual void enter()   { ++m_countEnter; }
-        virtual void process() { ++m_countProcess; }
+        virtual void process(app::StateHandler& sh) { ++m_countProcess; }
         virtual void leave()   { ++m_countLeave; }
 };
 
