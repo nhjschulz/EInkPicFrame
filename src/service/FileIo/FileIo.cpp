@@ -189,7 +189,7 @@ namespace service
         return FIO_READY == g_status;
     }
 
-    bool FileIo::read(uint8_t * buf, uint16_t size, uint16_t& read)
+    bool FileIo::read(void * buf, uint16_t size, uint16_t& read)
     {
         if (FIO_OPEN == g_status)
         {

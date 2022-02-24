@@ -117,7 +117,7 @@ namespace service
          * @return true 
          * @return false 
          */
-        static bool read(uint8_t * buf, uint16_t size, uint16_t& read);
+        static bool read(void * buf, uint16_t size, uint16_t& read);
 
         /**
          * @brief Get the current filename for diretory iterating
