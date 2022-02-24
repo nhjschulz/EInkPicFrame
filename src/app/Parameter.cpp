@@ -33,13 +33,16 @@
 #include "app/Parameter.h"
 
 #include "service/FileIo/FileIo.h"
-#include "service/FatFS/source/ff.h"
 #include "service/Debug/Debug.h"
 #include "hal/Cpu/Cpu.h"
 #include <util/crc16.h>
 
 namespace app
 {
+    /** parameter file name
+     */
+    static const char g_paramFile[] PROGMEM = "/epd/epd.cfg";
+
     /** Version 1 header format
      */
     static const uint8_t g_headerV1[] PROGMEM = { 'E', 'P', 'D', 1u, 4u };
@@ -48,10 +51,10 @@ namespace app
       */
     struct CfgFileV1
     {
-        char               signature[3];  /**< 'E' 'P' 'D'            */
-        uint8_t            version;       /**< version(1)             */
-        uint8_t            count;         /**< number of parameter(4) */
-        uint8_t            crc8;          /**< CRC8 over parameter    */
+        char    signature[3];  /**< 'E' 'P' 'D'            */
+        uint8_t version;       /**< version(1)             */
+        uint8_t count;         /**< number of parameter(4) */
+        uint8_t crc8;          /**< CRC8 over parameter    */
         union 
         {
             Parameter::ParamV1 param;
@@ -74,20 +77,25 @@ namespace app
     bool Parameter::init()
     {
         bool result(false);
+        bool ioret(false);
 
-        FIL file;       
-        FRESULT res(f_open(&file, "epd.cfg", FA_READ));
-        DEBUG_LOGP("Parameter::open() -> %d\r\n", res);
+        char path[sizeof(g_paramFile)];
 
-        if (FR_OK == res)
+        strncpy_P(path, g_paramFile, sizeof(path));
+
+        ioret = service::FileIo::open(path);
+        DEBUG_LOGP("Parameter::open() -> %d\r\n", ioret);
+
+        if (true == ioret)
         {
+
             CfgFileV1 cfg;
 
-            UINT read(0u);
-            res = f_read(&file, &cfg, sizeof(cfg), &read);
-            DEBUG_LOGP("Parameter::read() -> %d\r\n", res);
+            uint16_t read(0u);
+            ioret = service::FileIo::read(&cfg, sizeof(cfg), read);
+            DEBUG_LOGP("Parameter::read() -> %d\r\n", ioret);
 
-            if ((FR_OK == res) && (sizeof(cfg) == read))
+            if ((true == ioret) && (sizeof(cfg) == read))
             {
                 /*  read ok, validate header and parameter CRC 
                  */
@@ -121,7 +129,7 @@ namespace app
                 DEBUG_LOGP("param:read: got %d, wanted %d\r\n",read, sizeof(cfg));
             }
 
-            f_close(&file);
+            service::FileIo::close();
         }
 
         DEBUG_LOGP("p.interval   : %d min\r\n", m_param.interval);
