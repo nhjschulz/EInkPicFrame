@@ -15,9 +15,8 @@ the following capabilities:
 
 * SPI is used for reading from SD-Card, writing to EPD and ISP programing.
 * UART TX/RX - Only TX for debug prints is used, RX input is ignored
-* A Crystal - Available as an option for higher speed. SW runs the chip using
-  the internal crystal at 4 Mhz. That means the XTAL pins may currently be used
-  for something else using the solder pads for the crystal.
+* A 32.768 kHz watch crystal on the XTAL pins drives Timer2 to wakeup
+  the contoller from power safe mode.
 * ADC voltages - Reference voltage uses the recomended wiring with a capacitor
   and inductor. It is used for measuring the input voltage for low battery 
   indication.

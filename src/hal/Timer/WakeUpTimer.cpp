@@ -49,7 +49,8 @@ namespace hal
     void WakeUpTimer::init()
     { 
         power_timer2_enable();
-     
+
+        ASSR |= _BV(AS2); /* asynchronous operation using 32.768kHz crystal */
         TCCR2A = 0u;  /* Normal operation, no waveform pin output */
         TCCR2B &= ~(_BV(CS22) | _BV(CS21)  | _BV(CS20));  /* no clock, stopped */
         TIMSK2 = 0u;  /* interrupts disabled */
@@ -60,6 +61,11 @@ namespace hal
         TCNT2 = 0u;
         TCCR2B |= _BV(CS22) | _BV(CS21)  | _BV(CS20);  /* prescale 1024 */
 
+        /* wait for updates to settle, we are clocked asyncronously to CPU */
+        while (ASSR & (_BV(TCN2UB)|_BV(OCR2AUB|_BV(OCR2BUB)|_BV(TCR2AUB)|_BV(TCR2BUB))))
+        {
+        }
+        TIFR2 |= _BV(TOV2);     /* clear pending interrupt   */
         TIMSK2 |= _BV(TOIE2);   /* enable overflow interrupt */
 
     }
@@ -77,4 +83,13 @@ namespace hal
  */
 ISR(TIMER2_OVF_vect)
 { 
+    /* Ensure that IRQ flag got reset by triggering an dummy update
+     * to TCCR2A and wait for the pending update flag to vanish.
+     * Cpu need to wait here because timer is clocked asynchronously 
+     * and registers update on the external clock ticks.
+     */
+    TCCR2A = TCCR2A;
+    while (ASSR & _BV(TCR2AUB))
+    {
+    }
 }

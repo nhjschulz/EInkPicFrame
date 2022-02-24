@@ -31,8 +31,6 @@
  */
 
 #include "hal/Timer/TickTimer.h"
-#include "hal/Gpio/Gpio.h"
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/power.h>
