@@ -49,6 +49,8 @@ namespace app
     {
         DEBUG_LOGP("Enter ErrorState\r\n");
 
+        service::Power::enable(service::Power::POW_DISPLAY);
+
         if (service::Epd::init())
         {
             /* display blank red screen on error
@@ -66,6 +68,8 @@ namespace app
                 service::Power::idle(25u);
             }
         }
+        
+        service::Power::disable(service::Power::POW_DISPLAY);
 
     	/* Game over, shutdown now :( 
          */
