@@ -65,7 +65,6 @@ namespace app
                 
         /* display low battery image on EPD 
          */
-        service::Power::enable(service::Power::POW_DISPLAY);
         service::Epd::init();
 
         if (service::FileIo::enable())
@@ -99,14 +98,15 @@ namespace app
         
         service::Epd::sleep();
         service::FileIo::disable();
-        service::Power::disable(service::Power::POW_DISPLAY);
     }
 
     void LowBatState::process(StateHandler& stateHandler)
     {
+        const uint32_t milli10min = 10u * 60u * 1000u;
+
         /* sleep 10min before checking power state again.
          */
-        uint32_t loops((10u * 60u * 1000u) /
+        uint32_t loops(milli10min /
             service::Power::getSleepDurationMs());
 
         service::Power::suspend();
@@ -116,7 +116,7 @@ namespace app
             service::Power::sleep();
         }
     
-        service::Power::resume();
+        service::Power::resume(milli10min);
 
 
         /* Resume if supply power is 50 mV higher than the low voltage

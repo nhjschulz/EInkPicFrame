@@ -75,20 +75,25 @@ namespace hal
              * 
              * @return uint8_t 
              */
-            static uint8_t getTickCount(void)
-            {
-                return m_ticks;
-            }
-
-        private:
+            static uint8_t getTickCount(void);
 
             /**
-             * @brief Helper function to give ISR access to tick counter
+             * @brief Get the milliseconds since power on
              * 
+             * @return uint32_t 
              */
-            friend void incTickIsr(void);
+            static uint32_t getMillis(void);
 
-            static volatile uint8_t m_ticks;
+            /**
+             * @brief Adjust millisecond counter with given delta
+             * 
+             * This is used to compensate for sleep durations where the 
+             * timer is stopped.
+             * 
+             * @param deltaMs Milliseconds to add to millis count 
+             */
+            static void adjustMillies(uint32_t deltaMs);
+
 
         private:
             TickTimer(const TickTimer&);

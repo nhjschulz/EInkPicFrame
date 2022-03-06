@@ -34,14 +34,17 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/power.h>
+#include <util/atomic.h>
 
 /*******************************************************************************
     Module statics
 *******************************************************************************/
 
 /** application timer tick callback function */
-hal::TickTimer::TickFunctionCB tickCallback = nullptr;
+static hal::TickTimer::TickFunctionCB tickCallback = nullptr;
 
+/** milliseconds since power on */
+static volatile uint32_t g_millies = 0u;
 
 /*******************************************************************************
     Implementation
@@ -49,10 +52,10 @@ hal::TickTimer::TickFunctionCB tickCallback = nullptr;
 
 namespace hal
 {
-    volatile uint8_t TickTimer::m_ticks;
-
     void TickTimer::init()
     {
+        GPIOR0  = 0u;
+
         power_timer0_enable();
 
         /* 10ms tick interval at 4 Mhz F_CPU */
@@ -64,9 +67,7 @@ namespace hal
     }
 
     void TickTimer::enable(TickTimer::TickFunctionCB callback)
-    {
-        m_ticks = 0u;
-        
+    {        
         TCNT0 = 0u;
         TCCR0B |= ((1 << CS02) | (0 << CS01) |(0 << CS00));   /* clk/256  */ 
 
@@ -82,9 +83,28 @@ namespace hal
         power_timer0_disable();
     }
 
-    inline void incTickIsr(void)
+    uint8_t TickTimer::getTickCount(void)
     {
-        ++TickTimer::m_ticks;
+        return GPIOR0;
+    }
+
+    uint32_t TickTimer::getMillis(void)
+    {
+        uint32_t elapsed;
+
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+        {
+           elapsed = g_millies;
+        }
+        return elapsed;
+    }
+
+    void TickTimer::adjustMillies(uint32_t deltaMs)
+    {
+        ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+        {
+            g_millies += deltaMs;
+        }
     }
 }
 
@@ -93,7 +113,8 @@ namespace hal
  */
 ISR(TIMER0_COMPA_vect)
 { 
-    hal::incTickIsr();
+    ++GPIOR0;
+    g_millies += 10u;
 
     if (nullptr != tickCallback)
     {

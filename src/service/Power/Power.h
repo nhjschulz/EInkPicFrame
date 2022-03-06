@@ -34,6 +34,8 @@
 
 #include "hal/Cpu/Cpu.h"
 #include "hal/Timer/WakeUpTimer.h"
+#include "hal/Timer/TickTimer.h"
+
 #include "hal/Adc/Adc.h"
 
 namespace service
@@ -88,29 +90,27 @@ namespace service
         }
 
         /**
-         * @brief Enable (power) given device.
-         * 
-         * @param device  Device ID
-         */
-        static void enable(Device device);
-
-        /**
-         * @brief Disable (unpower) given device.
-         * 
-         * @param device Device ID
-         */
-        static void disable(Device device);
-
-        /**
          * @brief Resume power for devices
+         * 
+         * @param adjustTimeMs Sleep time to adjust millis count
          */
-        static void resume(void);
+        static void resume(uint32_t adjustTimeMs);
 
         /**
          * @brief Suspend power
          * 
          */
         static void suspend(void);
+
+        /**
+         * @brief Get uptime since power up in milliseconds
+         * 
+         * @return uint32_t 
+         */
+        static uint32_t uptime_mS(void)
+        {
+            return hal::TickTimer::getMillis();
+        }
 
         /**
          * @brief Get the Supply Voltage in milivolt
@@ -140,6 +140,20 @@ namespace service
         private:
             Power(const Power&);
             Power& operator=(const Power&);
+
+            /**
+             * @brief Enable (power) given device.
+             * 
+             * @param device  Device ID
+             */
+            static void enable(Device device);
+
+            /**
+             * @brief Disable (unpower) given device.
+             * 
+             * @param device Device ID
+             */
+            static void disable(Device device);
     };
 }
 #endif

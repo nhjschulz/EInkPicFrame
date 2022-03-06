@@ -33,54 +33,95 @@
 #include "app/SleepState.h"
 #include "app/UpdateState.h"
 #include "app/LowBatState.h"
+#include "app/InitState.h"
 #include "app/Parameter.h"
 
 #include "service/Debug/Debug.h"
 #include "service/Power/Power.h"
+#include "service/FileIo/FileIo.h"
+
+
+static void printTime()
+{
+#if WITH_DEBUG != 0
+    uint32_t seconds(service::Power::uptime_mS() / 1000u);
+    uint32_t hours( seconds / 3600u);
+    uint32_t minutes((seconds % 3600u) / 60);
+
+    DEBUG_LOGP("Time: %ld:%02ld:%02ld\r\n", hours, minutes, seconds % 60u);
+
+#endif
+}
 namespace app
 {
-    static SleepState sleepState;
+    static SleepState g_sleepState;
+    static uint32_t g_vsn;  /**< volume serial number when entering sleep */
+    static uint16_t g_loops = 0u;
 
     SleepState& SleepState::instance()
     {
-        return sleepState;
+        return g_sleepState;
     }
 
     void SleepState::enter(void)
     {
         DEBUG_LOGP("Sleep()\r\n");
+
+        if (!service::FileIo::getVolumeSerialNumber(g_vsn))
+        {
+            g_vsn = 0u;
+        }
+
+        if (!g_loops)
+        {
+            /* calculate sleep loops tp delay wanted minutes
+             */
+            uint32_t loops(Parameter::getInterval()); /* get minutes to sleep */
+            loops = (loops * 60000ul) / service::Power::getSleepDurationMs();
+            g_loops = (uint16_t)loops;
+
+            DEBUG_LOGP("sleep loops: %ld\r\n", loops);
+        }
+        printTime();
         service::Power::suspend();
     }
     
     void SleepState::process(StateHandler& stateHandler)
     {
-        /* sleep x minutes*/
-        uint32_t loops(Parameter::getInterval()); /* get minutes to sleep */
-
-        loops = (loops * 60000ul) / service::Power::getSleepDurationMs();
-
-        while (loops--)
+        for (uint16_t i(g_loops); i != 0u; --i)
         {
             service::Power::sleep();
         }
 
-        service::Power::resume();
+        service::Power::resume(g_loops * service::Power::getSleepDurationMs());
 
-        /* check for sufficient supply voltage
-         */
-        uint16_t supplyVoltage(service::Power::getSupplyVoltage_mV());
-        if (supplyVoltage < Parameter::getMinVoltage())
+        IState& nextState(UpdateState::instance());
+
+        uint32_t vsn;
+        if ( (0u != g_vsn) && 
+             service::FileIo::getVolumeSerialNumber(vsn) &&
+             (g_vsn != vsn))
         {
-            stateHandler.setState(LowBatState::instance());
+            DEBUG_LOGP("Card Swapped, restarting");
+            nextState = InitState::instance();
         }
         else
         {
-            stateHandler.setState(UpdateState::instance());
+            /* check for sufficient supply voltage
+            */
+            uint16_t supplyVoltage(service::Power::getSupplyVoltage_mV());
+            if (supplyVoltage < Parameter::getMinVoltage())
+            {
+                nextState = LowBatState::instance();
+            }
         }
+        
+        stateHandler.setState(nextState);
     }
 
     void SleepState::leave(void)
     {
         DEBUG_LOGP("Wakeup()\r\n");
+        printTime();
     }
 }

@@ -95,7 +95,7 @@ namespace service
     {
         hal::Uart::get().close();
 
-        /* ensure external modules off */
+        /* external modules off */
         service::Power::disable(service::Power::POW_SDCARD);
         service::Power::disable(service::Power::POW_DISPLAY);
 
@@ -104,21 +104,15 @@ namespace service
         hal::Spi::disable();
         hal::TickTimer::disable();
 
-        /* slow down clock */
-        hal::Cpu::setClock(hal::Cpu::CLK_SLEEP);
-
         /* enable wakeup timer */
         hal::WakeUpTimer::init();
         hal::WakeUpTimer::enable();    
     }
     
-    void Power::resume(void)
+    void Power::resume(uint32_t adjustTimeMs)
     {
         /* disable wakeup timer */
         hal::WakeUpTimer::disable();
-
-        /* speed up clock */
-        hal::Cpu::setClock(hal::Cpu::CLK_NORMAL);
         
         /* turn on onchip devices */
         hal::Spi::init();
@@ -126,10 +120,14 @@ namespace service
 
         hal::TickTimer::init();
         hal::TickTimer::enable(disk_timerproc);
+        hal::TickTimer::adjustMillies(adjustTimeMs);
 
         hal::Adc::enable();
 
         DEBUG_INIT();
+
+        service::Power::enable(service::Power::POW_SDCARD);
+        service::Power::enable(service::Power::POW_DISPLAY);
 
         hal::Cpu::irqEnable();
     }

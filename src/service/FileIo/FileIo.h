@@ -55,7 +55,7 @@ namespace service
         /**
          * @brief Shared data buffer for file IO
          * 
-         * A shared buffer is used to reduce precious RAM consumption
+         * A shared IO buffer is used to reduce precious RAM consumption
          * on the AVR 328P. 
          */
         static uint8_t iobuf[SHARED_BUF_SIZE];
@@ -85,7 +85,7 @@ namespace service
         static bool init();
 
         /**
-         * @brief open current file
+         * @brief open given file
          * 
          * @return true 
          * @return false 
@@ -93,7 +93,7 @@ namespace service
         static bool open(const char * fname = getFileName());
 
         /**
-         * @brief closde current file
+         * @brief close actual file
          * 
          * @return true 
          * @return false 
@@ -101,7 +101,7 @@ namespace service
         static bool close();
 
         /**
-         * @brief advance to next file
+         * @brief advance to next file in directory
          * 
          * @return true 
          * @return false 
@@ -120,9 +120,20 @@ namespace service
         static bool read(void * buf, uint16_t size, uint16_t& read);
 
         /**
-         * @brief Get the current filename for diretory iterating
+         * @brief Get the Volume Serial Number of mounted FS
          * 
-         * @return const char*  next filename
+         * Used to detect card swaps between sleeps
+         * 
+         * @param[out] vsn volume serial number  
+         * @return true 
+         * @return false 
+         */
+        static bool getVolumeSerialNumber(uint32_t& vsn);
+
+        /**
+         * @brief Get the actual filename from epd/img directory iterating
+         * 
+         * @return const char*  actual filename
          */
         static const char * getFileName();
 

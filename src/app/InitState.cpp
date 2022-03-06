@@ -55,7 +55,7 @@ namespace app
     {
         service::init();
         service::Led::enable();
-        service::Power::resume();
+        service::Power::resume(0u);
         service::Power::idle(50);
         service::Led::disable();
     }

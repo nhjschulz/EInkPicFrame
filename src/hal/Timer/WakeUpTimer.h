@@ -47,14 +47,11 @@ namespace hal
 
             /** Duration in miliseconds until sleep phase ends
              * 
-             *  The 328P can roughly sleep 8 seconds until the power down 
-             *  wakekup timer2 overflows and triggers.
-             * 
-             *  Formula: 8Mhz / 256(clk prescale) / 1024(timer2 prescale) / 256(cnt)
-             *           -> 0,11920929 Hz or 8388,608 seconds 
+             * Sleep wakeup is triggered by Timer2 using 32.768kHz crystal.
+             * This means a 8 second sleep at prescale 1024 and 8 bit count.
              * 
              */
-            static const uint32_t WAKEUP_INTERVAl_MS = 8389u;
+            static const uint32_t WAKEUP_INTERVAl_MS = 8000u;
 
             /** low level init of timer (does not enable it)
              */

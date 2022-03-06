@@ -56,7 +56,6 @@ namespace app
                 
         bool errorOccured(false) ;
 
-        service::Power::enable(service::Power::POW_DISPLAY);
         DEBUG_LOGP("Epd::init()...");
         if (!service::Epd::init())
         {
@@ -67,6 +66,13 @@ namespace app
         {
             DEBUG_LOGP("done\r\n");
 
+            service::Epd::clear(service::Epd::CLEAN);
+            if (!service::Epd::init())
+            {
+                DEBUG_LOGP("timeout!!\r\n");
+                errorOccured = true;
+            }
+            
             if (!updateScreen())
             {
                 errorOccured = true;
@@ -80,7 +86,6 @@ namespace app
         else
         {
             stateHandler.setState(SleepState::instance());
-            service::Power::disable(service::Power::POW_DISPLAY);
         }
     }
 

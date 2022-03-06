@@ -75,8 +75,6 @@ namespace service
     {
         g_enable = false;
 
-        service::Power::enable(service::Power::POW_SDCARD);
-
         FRESULT res(f_mount(&g_fs, "", 1));
 
         DEBUG_LOGP("FileIo f_mount-> %d\r\n", res);
@@ -84,7 +82,7 @@ namespace service
         if (FR_OK == res)
         {
            g_status = FIO_MOUNT;
-
+           
             /* expect data in epd directory */
             res = f_chdir(g_dirPath);
             DEBUG_LOGP("FileIo f_chdir-> %d\r\n", res);
@@ -218,14 +216,11 @@ namespace service
         {
             DEBUG_LOGP("FileIo::enable()\r\n");
 
-            service::Power::enable(service::Power::POW_SDCARD);
-
             DSTATUS status(disk_initialize(0));
             DEBUG_LOGP("FileIo disk_initialize-> %d\r\n", status);
 
             if (status & STA_NOINIT)
     	    {
-                service::Power::disable(service::Power::POW_SDCARD);
                 g_enable = false;
             }
             else 
@@ -241,9 +236,20 @@ namespace service
     {
         if (true == g_enable)
         {
-            service::Power::disable(service::Power::POW_SDCARD);
             g_enable = false;
             DEBUG_LOGP("FileIo::disable()\r\n");
         }
     }
+
+    bool FileIo::getVolumeSerialNumber(uint32_t& vsn)
+    {
+        char null (0u);
+        char label[12+1];
+
+        FRESULT res(f_getlabel(&null, label, &vsn));
+        DEBUG_LOGP("FileIo::vsn(%04lx-%04lx) -> %02x\r\n", vsn>>16, (vsn&0xFFFF), res);
+
+        return FR_OK == res;
+    }
+
 }

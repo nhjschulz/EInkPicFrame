@@ -38,6 +38,7 @@
 
 #include "hal/Uart/Uart.h"
 #include "hal/Gpio/Gpio.h"
+#include "hal/Timer/TickTimer.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -104,8 +105,11 @@ namespace service
         va_end (args);
     }
     
+    static const char  pfx[] PROGMEM= "%8ld : ";
+
     void Debug::logP(const char * fmt, ...)
     {
+        fprintf_P(&uartFileStream, pfx, hal::TickTimer::getMillis());
         va_list args;
         va_start (args, fmt);
         vfprintf_P(&uartFileStream, fmt, args);

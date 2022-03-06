@@ -32,11 +32,12 @@
 
 #include "service/ServiceInit.h"
 #include "hal/HalInit.h"
-
+#include "hal/Cpu/Cpu.h"
 namespace service
 {
     void init(void)
     {
+        hal::Cpu::setClock(hal::Cpu::CLK_NORMAL);
         hal::init();
     }
 }
