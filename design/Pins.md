@@ -14,8 +14,8 @@ The page lists the used pin assignment to/from the microcontroller.
 | 6| PD4  | SDCARD CS         | output               |
 | 7| VCC  | Power             | VCC                  |
 | 8| GND  | Power             | GND                  |
-| 9| PB6  | reserved Crystal  | for future use       |
-|10| PB7  | reserved Crystal  | for future use       |
+| 9| PB6  | watch crystal     | 32.768 Khz           |
+|10| PB7  | watch crystal     | 32.768 Khz           |
 |11| PD5  | SDCARD Mosfet     | output               |
 |12| PD6  | Display Mosfet    | output               |
 |13| PD7  | Display BUSY      | input                |
