@@ -51,7 +51,7 @@ namespace hal
              * This means a 8 second sleep at prescale 1024 and 8 bit count.
              * 
              */
-            static const uint32_t WAKEUP_INTERVAl_MS = 8000u;
+            static const uint16_t WAKEUP_INTERVAl_MS = 8000u;
 
             /** low level init of timer (does not enable it)
              */

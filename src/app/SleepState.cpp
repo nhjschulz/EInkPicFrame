@@ -95,7 +95,7 @@ namespace app
 
         service::Power::resume(g_loops * service::Power::getSleepDurationMs());
 
-        IState& nextState(UpdateState::instance());
+        IState* nextState(&UpdateState::instance());
 
         uint32_t vsn;
         if ( (0u != g_vsn) && 
@@ -103,20 +103,23 @@ namespace app
              (g_vsn != vsn))
         {
             DEBUG_LOGP("Card Swapped, restarting");
-            nextState = InitState::instance();
+            nextState = &InitState::instance();
         }
         else
         {
             /* check for sufficient supply voltage
             */
             uint16_t supplyVoltage(service::Power::getSupplyVoltage_mV());
+                        DEBUG_LOGP("voltage: %d\r\n",supplyVoltage);
+
             if (supplyVoltage < Parameter::getMinVoltage())
             {
-                nextState = LowBatState::instance();
+                nextState = &LowBatState::instance();
+                DEBUG_LOGP("goto lowpbattery\r\n");
             }
         }
         
-        stateHandler.setState(nextState);
+        stateHandler.setState(*nextState);
     }
 
     void SleepState::leave(void)

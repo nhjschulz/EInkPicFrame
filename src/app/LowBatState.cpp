@@ -102,12 +102,14 @@ namespace app
 
     void LowBatState::process(StateHandler& stateHandler)
     {
-        const uint32_t milli10min = 10u * 60u * 1000u;
+        const uint32_t milli10min(10ul * 60ul * 1000ul);
 
         /* sleep 10min before checking power state again.
          */
-        uint32_t loops(milli10min /
-            service::Power::getSleepDurationMs());
+        uint32_t loops(milli10min / service::Power::getSleepDurationMs());
+
+        DEBUG_LOGP(" LowBat: %ld loops \r\n",loops);
+
 
         service::Power::suspend();
 
