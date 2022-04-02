@@ -54,9 +54,10 @@ static void printTime()
 }
 namespace app
 {
-    static SleepState g_sleepState;
+    static SleepState g_sleepState; /**< state instance */
     static uint32_t g_vsn;  /**< volume serial number when entering sleep */
-    static uint16_t g_loops = 0u;
+    static uint16_t g_loops = 0u; /**< number of sleep/wakeups to run */
+    static uint32_t  g_timeAdjust = 0ul; /**< lost ticks during sleep */
 
     SleepState& SleepState::instance()
     {
@@ -74,11 +75,12 @@ namespace app
 
         if (!g_loops)
         {
-            /* calculate sleep loops tp delay wanted minutes
+            /* Calculate sleep loops to delay wanted minutes
              */
             uint32_t loops(Parameter::getInterval()); /* get minutes to sleep */
             loops = (loops * 60000ul) / service::Power::getSleepDurationMs();
             g_loops = (uint16_t)loops;
+            g_timeAdjust = loops * service::Power::getSleepDurationMs();
 
             DEBUG_LOGP("sleep loops: %ld\r\n", loops);
         }
@@ -93,7 +95,7 @@ namespace app
             service::Power::sleep();
         }
 
-        service::Power::resume(g_loops * service::Power::getSleepDurationMs());
+        service::Power::resume(g_timeAdjust);
 
         IState* nextState(&UpdateState::instance());
 
