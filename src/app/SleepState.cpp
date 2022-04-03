@@ -34,6 +34,7 @@
 #include "app/UpdateState.h"
 #include "app/LowBatState.h"
 #include "app/InitState.h"
+#include "app/ErrorState.h"
 #include "app/Parameter.h"
 
 #include "service/Debug/Debug.h"
@@ -98,14 +99,21 @@ namespace app
         service::Power::resume(g_timeAdjust);
 
         IState* nextState(&UpdateState::instance());
+        uint32_t vsn(0ul); /* volume serial number */
 
-        uint32_t vsn;
-        if ( (0u != g_vsn) && 
+        if (!service::FileIo::enable())
+        {
+            DEBUG_LOGP("file system error\r\n");
+            nextState = &ErrorState::instance();
+        }
+        else if ( 
+             (0u != g_vsn) && 
              service::FileIo::getVolumeSerialNumber(vsn) &&
              (g_vsn != vsn))
         {
-            DEBUG_LOGP("Card Swapped, restarting");
-            nextState = &InitState::instance();
+            DEBUG_LOGP("Card swapped, restarting\r\n");
+            service::Power::suspend();
+            service::Power::reboot();
         }
         else
         {
@@ -117,7 +125,7 @@ namespace app
             if (supplyVoltage < Parameter::getMinVoltage())
             {
                 nextState = &LowBatState::instance();
-                DEBUG_LOGP("goto lowpbattery\r\n");
+                DEBUG_LOGP("low battery\r\n");
             }
         }
         

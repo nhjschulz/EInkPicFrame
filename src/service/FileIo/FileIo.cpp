@@ -73,8 +73,6 @@ namespace service
 
     bool FileIo::init(void)
     {
-        g_enable = false;
-
         FRESULT res(f_mount(&g_fs, "", 1));
 
         DEBUG_LOGP("FileIo f_mount-> %d\r\n", res);

@@ -62,7 +62,7 @@ namespace app
 
     void InitState::process(StateHandler& stateHandler)
     {
-        if (!service::FileIo::init())
+        if ((!service::FileIo::init()) || (!service::FileIo::enable()))
         {
             stateHandler.setState(ErrorState::instance());
         }

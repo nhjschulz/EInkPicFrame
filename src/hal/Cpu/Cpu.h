@@ -102,6 +102,11 @@ namespace hal
          */
         static void enterPowerSave();
 
+        /**
+         * @brief Reset system
+         * 
+         */
+        static void reset(void);
 
         /**
          * @brief Get the Idle time for one tick in ms.

@@ -58,17 +58,11 @@ namespace service
         switch(device)
         {
             case POW_SDCARD:
-#if BOARD_REVISION < 0x0200 /* N-Mosfets on display/SDcard */
             	hal::Gpio::setSdCardPower();
-#else
-            	hal::Gpio::clrSdCardPower();
-#endif
-                hal::Cpu::delayMS(20u);
                 break;
 
             case POW_DISPLAY:
                 hal::Gpio::setDispPow();
-                hal::Cpu::delayMS(50u);
                 break;
         }
     }
@@ -78,11 +72,7 @@ namespace service
          switch(device)
          {
             case POW_SDCARD:
-#if BOARD_REVISION < 0x0200 /* N-Mosfets on display/SDcard */
                 hal::Gpio::clrSdCardPower();
-#else
-             	hal::Gpio::setSdCardPower();
-#endif
                 break;
 
             case POW_DISPLAY:
@@ -93,43 +83,43 @@ namespace service
 
     void Power::suspend()
     {
-        hal::Uart::get().close();
-
         /* external modules off */
         service::Power::disable(service::Power::POW_SDCARD);
         service::Power::disable(service::Power::POW_DISPLAY);
 
+        hal::Uart::get().close();
+
         /* disable on chip devices */
         hal::Adc::disable();
         hal::Spi::disable();
-        hal::TickTimer::disable();
 
         /* enable wakeup timer */
         hal::WakeUpTimer::init();
-        hal::WakeUpTimer::enable();    
+        hal::WakeUpTimer::enable();
+
+        hal::TickTimer::disable(); /* disable at last to loose less ticks*/
     }
     
     void Power::resume(uint32_t adjustTimeMs)
-    {
-        /* disable wakeup timer */
-        hal::WakeUpTimer::disable();
-        
-        /* turn on onchip devices */
-        hal::Spi::init();
-        hal::Spi::enable();
-
+    {        
         hal::TickTimer::init();
         hal::TickTimer::enable(disk_timerproc);
         hal::TickTimer::adjustMillies(adjustTimeMs);
 
+        /* disable wakeup timer */
+        hal::WakeUpTimer::disable();
+
+        /* turn on onchip devices */
+
+        hal::Spi::init();
+        hal::Spi::enable();
         hal::Adc::enable();
 
         DEBUG_INIT();
 
         service::Power::enable(service::Power::POW_SDCARD);
         service::Power::enable(service::Power::POW_DISPLAY);
-
-        hal::Cpu::irqEnable();
+        hal::Cpu::enterIdle(1);
     }
 
     void Power::setCalibrationVoltages(

@@ -93,55 +93,47 @@ namespace app
     {
         bool result(true);
 
-        if (service::FileIo::enable())
+        DEBUG_LOGP("File %s\r\n", service::FileIo::getFileName());
+
+        DEBUG_LOGP("Epd::beginPaint()...");
+        service::Epd::beginPaint();
+        DEBUG_LOGP("done\r\n");
+
+        if (service::FileIo::open())
         {
-            DEBUG_LOGP("File %s\r\n", service::FileIo::getFileName());
-            
-            DEBUG_LOGP("Epd::beginPaint()...");
+            uint16_t readRet(0u);
+            uint32_t total(0);
 
-            service::Epd::beginPaint();
-            DEBUG_LOGP("done\r\n");
+            do {
+                service::FileIo::read(
+                    service::FileIo::iobuf,
+                    service::FileIo::SHARED_BUF_SIZE, readRet);
 
-            if (service::FileIo::open())
-            {
-                uint16_t readRet(0u);
-                uint32_t total(0);
+                if (0u != readRet)
+                {
+                    service::Epd::sendBlock(
+                        service::FileIo::iobuf, readRet);
+                    total += readRet;
+                }
+            } while (0u != readRet);
 
-                do {
-                    service::FileIo::read(
-                        service::FileIo::iobuf,
-                        service::FileIo::SHARED_BUF_SIZE, readRet);
+            service::FileIo::close();
 
-                    if (0u != readRet)
-                    {
-                        service::Epd::sendBlock(
-                            service::FileIo::iobuf, readRet);
-                        total += readRet;
-                    }
-                } while (0u != readRet);
-
-                service::FileIo::close();
-
-                DEBUG_LOGP("read %ld\r\n", total);
-            }
-            
-            if (!service::FileIo::next())
-            {
-                DEBUG_LOGP("no next\r\n");
-                result = false;
-            }
-
-            service::FileIo::disable();
-
-            DEBUG_LOGP("Epd::endPaint()...");
-            service::Epd::endPaint();
-            DEBUG_LOGP("done\r\n");
-            service::Epd::sleep();
+            DEBUG_LOGP("read %ld\r\n", total);
         }
-        else
+
+        if (!service::FileIo::next())
         {
-            result  = false;
+            DEBUG_LOGP("no next\r\n");
+            result = false;
         }
+
+        service::FileIo::disable();
+
+        DEBUG_LOGP("Epd::endPaint()...");
+        service::Epd::endPaint();
+        DEBUG_LOGP("done\r\n");
+        service::Epd::sleep();
 
         return result;
     }

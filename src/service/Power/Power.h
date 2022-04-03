@@ -90,6 +90,15 @@ namespace service
         }
 
         /**
+         * @brief Reboot system
+         * 
+         */
+        static void reboot(void)
+        {
+            hal::Cpu::reset();
+        }
+    
+        /**
          * @brief Resume power for devices
          * 
          * @param adjustTimeMs Sleep time to adjust millis count

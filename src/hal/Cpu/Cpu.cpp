@@ -35,6 +35,7 @@
 
 #include <avr/sleep.h>
 #include <avr/power.h>
+#include <avr/wdt.h>
 
 namespace hal
 {
@@ -98,6 +99,18 @@ namespace hal
             delta = TickTimer::getTickCount() - currTicks;
         } while (delta <= ticks);
         
+    }
+
+    void Cpu::reset(void)
+    {
+        /* reset through watchdog timeout */
+        irqDisable();   
+        wdt_enable(WDTO_15MS);
+
+        for(;;)
+        {
+
+        }
     }
 
 } // namespace hal
