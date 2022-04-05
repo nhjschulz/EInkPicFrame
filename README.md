@@ -11,8 +11,7 @@ saving methods to run for a long time without recharging.
 This is a hobbyist project. I have >20 years background in software development,
 but lack the electronic engineering background. I'm using this project to
 clear the fog in these mysterious regions below a HAL software layer. The project
-therefore includes a hardware design as well. Keep this in mind if you plan to
-rebuild it. As with any open source, you use this AT YOUR OWN RISK!.
+therefore includes a hardware design as well.
 
 ## Requirements
 
@@ -31,7 +30,7 @@ The project is build using open source tools only. All of them are available for
 |Tool                  |   Usage                   | Version   | Link                                                               |
 |----------------------|---------------------------|-----------|--------------------------------------------------------------------|
 | Visual Studio Code   | Editor and IDE            | 1.63.2    | [https://code.visualstudio.com/](https://code.visualstudio.com/)   |
-| PlatformIO           | Softwate bUild tools      | 5.2.4     | [https://platformio.org/](https://platformio.org/)                 |
+| PlatformIO           | Software build tools      | 5.2.4     | [https://platformio.org/](https://platformio.org/)                 |
 | Python               | Script programming        | 3.10.1    | [https://www.python.org/](https://www.python.org/)                 |
 | GIMP                 | Image Manipulation        | 2.10.30   | [https://www.gimp.org/](https://www.gimp.org/)                     |
 | ImageMagick          | Image Manipulation        | 7.1.0     | [https://imagemagick.org/](https://imagemagick.org/)               |
@@ -59,7 +58,7 @@ described on the [ImageConverter](imgconverter/howto.md) page.
 ## File System
 
 The SD Card must be formated using a FAT file system. The software
-expectes a folder with the name "epd" on it. This folder contains
+expects a folder with the name "epd" on it. This folder contains
 the following data:
 
       [epd]
