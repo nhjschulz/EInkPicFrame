@@ -3,7 +3,9 @@
 This page defines the software architecture of the EPaperFrame.
 ## Software Context
 
-The software is developed in C/C++ and runs on the AVR328P micro controller. The following picture shows the context of the software. The file system and display is controlled using a single SPI interface and two MOSFETs to disable their power in sleep.
+The software is developed in C/C++ and runs on the AVR328P micro controller. The AVR was choosen because of its easy to solder DIP packaging and builtin power saving modes. The limited amount of RAM (2Kb!) was also an interesting extra SW challenge, given that a single SD-CARD block already needs 25% of it.
+
+The following picture shows the context of the software. The file system and display is controlled using a single SPI interface and two MOSFETs to disable their power in sleep.
 
 The other interfaces are used for flashing (ISP) and debugging (LED, UART) purposes only.
 
@@ -38,6 +40,6 @@ This part implements the interface to the AVR 328P microcontroller.
 * System is static, there is no heap usage or dynamic object generation.
 * Classes are implemented as singletons or have only static elements as the system is static.
 * Favour many short over fewer large classes (small is beautiful).
-* Distribute code phases to states even if they are small (extensibility).^
-* Save power as mutch as possible by utilizing sleep modes and unbpwering 
+* Distribute code phases to states even if they are small (extensibility).
+* Save power as much as possible by utilizing sleep modes and unpowering 
   unsused devices.
