@@ -28,15 +28,15 @@ package app {
         class ErrorState
         class LowBatteryState
 
-        UpdateState -u-|> AbstractState
-        SleepState -u-|> AbstractState
-        InitState -u-|> AbstractState
-        ErrorState -u-|> AbstractState
-        LowBatteryState -u-|> AbstractState
+        UpdateState .u.|> AbstractState
+        SleepState .u.|> AbstractState
+        InitState .u.|> AbstractState
+        ErrorState .u.|> AbstractState
+        LowBatteryState .u.|> AbstractState
     }
 
-    Main -l-> StateHandler
-    StateHandler --> AbstractState
+    Main .l.> StateHandler
+    StateHandler ..> AbstractState
 }
 
 package Service {
@@ -148,35 +148,35 @@ package Hal {
         +readChannel()
     }
 }
-InitState --> ServiceInit
-InitState --> Led
-ServiceInit -> HalInit
-UpdateState -> FileIO
-UpdateState -> Display
-SleepState --> Power
-ErrorState --> Power
-UpdateState --> Power
-LowBatteryState --> Power
-LowBatteryState ---> FileIO
-app --> Debug
+InitState ..> ServiceInit
+InitState ..> Led
+ServiceInit .> HalInit
+UpdateState .> FileIO
+UpdateState .> Display
+SleepState ..> Power
+ErrorState ..> Power
+UpdateState ..> Power
+LowBatteryState ..> Power
+LowBatteryState ...> FileIO
+app ..> Debug
 
-FileIO ->FatFS
-FatFS -d-> DiskIo
-FileIO -> DiskIo
+FileIO .>FatFS
+FatFS .d.> DiskIo
+FileIO .> DiskIo
 
-Debug -> Uart
-Debug --> Gpio
-DiskIo --> Spi
-Display --> Spi
-Display --> Gpio
-Power --> Cpu
-Power --> WakeUpTimer
-Power -> Gpio
-Power ---> Adc
-DiskIo --> TickTimer
-Led --> Gpio
+Debug .> Uart
+Debug ..> Gpio
+DiskIo ..> Spi
+Display ..> Spi
+Display ..> Gpio
+Power ..> Cpu
+Power ..> WakeUpTimer
+Power .> Gpio
+Power ...> Adc
+DiskIo ..> TickTimer
+Led ..> Gpio
 
-Parameter --> FileIO
+Parameter ..> FileIO
 
 
 @enduml
