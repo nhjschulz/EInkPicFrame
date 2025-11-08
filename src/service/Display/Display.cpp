@@ -1,23 +1,23 @@
 /*
  * BSD 3-Clause License
- * 
- * Copyright (c) 2022, Norbert Schulz
+ *
+ * Copyright (c) 2022-2025, Norbert Schulz
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -35,7 +35,7 @@
 #include "service/Display/Display.h"
 #include "service/Debug/Debug.h"
 
-namespace service 
+namespace service
 {
     /** Slave select function for SPI when talking to display
      * @see hal::SPi::configure
@@ -52,7 +52,7 @@ namespace service
         }
     }
 
-    /* Command Sequences taken from documents here: 
+    /* Command Sequences taken from documents here:
      * https://www.waveshare.com/wiki/5.65inch_e-Paper_Module_(F)
      */
 
@@ -87,7 +87,7 @@ namespace service
      */
     static const uint8_t R06_cmdBTST[] PROGMEM = { 0x06, 0xC7, 0xC7, 0x1D };
 
-    /** 
+    /**
      * R07H (DSLP): Deep sleep#
      * Note Documentation @  Waveshare shows cmd code as 0x10 in table, but
      * 0x10 is DTM1.
@@ -143,15 +143,15 @@ namespace service
      */
     static const uint8_t RE3_cmdPWS[] PROGMEM = { 0xE3, 0xAA };
 
-    bool Epd::init(void) 
-    { 
+    bool Epd::init(void)
+    {
         bool result(false);
 
         configureSpi();
 
         reset();
 
-        if (waitForIdle(100u)) 
+        if (waitForIdle(100u))
         {
             sendCmd_P(R00_cmdPSR, sizeof(R00_cmdPSR));
             sendCmd_P(R01_cmdPWR, sizeof(R01_cmdPWR));
@@ -184,7 +184,7 @@ namespace service
         if (1u < size)
         {
             hal::Gpio::setDispDC();  /* data bytes */
-            ++cmd; 
+            ++cmd;
             --size;
             hal::Spi::write_P(cmd, size);
         }
@@ -203,7 +203,7 @@ namespace service
             }
 
             /* If BUSYN=0 then waiting */
-        } while((0u < tmo_ms) && (false == hal::Gpio::getDispBusy())); 
+        } while((0u < tmo_ms) && (false == hal::Gpio::getDispBusy()));
 
         return true == hal::Gpio::getDispBusy();
     }
@@ -212,7 +212,7 @@ namespace service
     {
         tmo_ms /= hal::Cpu::getIdleTickTime_ms();
 
-        do 
+        do
         {
             hal::Cpu::enterIdle(1u);
         if (0u < tmo_ms)
@@ -230,9 +230,9 @@ namespace service
     {
         hal::Spi::configure(
             hal::Spi::CLK_2000000,
-            hal::Spi::MODE_0, 
+            hal::Spi::MODE_0,
             hal::Spi::BITORDER_MSB, dispSlaveSelect);
-    } 
+    }
 
     void Epd::beginPaint()
     {
@@ -281,7 +281,7 @@ namespace service
         hal::Cpu::delayMS(1);
 
         hal::Gpio::setDispReset();
-        hal::Cpu::enterIdle(20);    
+        hal::Cpu::enterIdle(20);
     }
 
     void Epd::clear(Epd::Color color)
@@ -309,7 +309,7 @@ namespace service
     void Epd::sleep(void)
     {
         configureSpi();
-        
+
         sendCmd_P(R07_cmdDSLP, sizeof(R07_cmdDSLP));
 
         hal::Cpu::enterIdle(10);

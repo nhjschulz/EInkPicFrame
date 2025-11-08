@@ -1,23 +1,23 @@
 /*
  * BSD 3-Clause License
- * 
- * Copyright (c) 2022, Norbert Schulz
+ *
+ * Copyright (c) 2022-2025, Norbert Schulz
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -43,10 +43,10 @@ namespace service
     class Power
     {
         public:
-        
+
         /**
          * @brief devices with switchable power
-         * 
+         *
          */
         enum Device
         {
@@ -56,14 +56,14 @@ namespace service
 
         /**
          * @brief Halt system.
-         * 
+         *
          * Requires reset to resume execution from start.
          */
         static void halt(void);
 
         /**
          * @brief sleep CPU
-         * 
+         *
          */
         static void sleep(void)
         {
@@ -71,7 +71,7 @@ namespace service
         }
 
         /** Get sleep duration in ms
-         * 
+         *
          * In our case we are woken up by the WakeTimer, get its max interval.
          */
         static uint16_t getSleepDurationMs()
@@ -81,7 +81,7 @@ namespace service
 
         /**
          * @brief Enter idle mode for given timer ticks (1tick = 10ms)
-         * 
+         *
          * @param ticks10ms Number of timer ticks to idle
          */
         static void idle(uint8_t ticks10ms)
@@ -91,30 +91,30 @@ namespace service
 
         /**
          * @brief Reboot system
-         * 
+         *
          */
         static void reboot(void)
         {
             hal::Cpu::reset();
         }
-    
+
         /**
          * @brief Resume power for devices
-         * 
+         *
          * @param adjustTimeMs Sleep time to adjust millis count
          */
         static void resume(uint32_t adjustTimeMs);
 
         /**
          * @brief Suspend power
-         * 
+         *
          */
         static void suspend(void);
 
         /**
          * @brief Get uptime since power up in milliseconds
-         * 
-         * @return uint32_t 
+         *
+         * @return uint32_t
          */
         static uint32_t uptime_mS(void)
         {
@@ -123,7 +123,7 @@ namespace service
 
         /**
          * @brief Get the Supply Voltage in milivolt
-         * 
+         *
          * @return uint16_t voltage in mV
          */
         static uint16_t getSupplyVoltage_mV(void)
@@ -138,7 +138,7 @@ namespace service
 
         /**
          * @brief Set the voltage parameter used for ADC calibration.
-         * 
+         *
          * @param refVoltage_mV  Voltage on AVCC pin for calibration
          * @param supVoltage_mv  Calibrated reference voltage
          */
@@ -152,14 +152,14 @@ namespace service
 
             /**
              * @brief Enable (power) given device.
-             * 
+             *
              * @param device  Device ID
              */
             static void enable(Device device);
 
             /**
              * @brief Disable (unpower) given device.
-             * 
+             *
              * @param device Device ID
              */
             static void disable(Device device);

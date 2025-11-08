@@ -1,6 +1,6 @@
 # Parameter
 
-EPD supports a parameter file to influence its behaviour.
+EPD supports a parameter file to influence its behavior.
 The parameter file is optional. Internal defaults are used
 if no parameter block is present in the file system.
 
@@ -11,7 +11,7 @@ The software expects the parameter file at the following location:
     /epd/epd.cfg
 
 The file is a binary file in the format defined below.
-A binary file method was choosen to unburden the microcontroller from
+A binary file method was chosen to unburden the microcontroller from
 text parsing needs. EPD also offers no user interface for editing
 parameter. Producing the parameter set on a PC and store it in the file
 system is therefore the easiest solution.
@@ -57,7 +57,7 @@ It generates the parameter data based on the following JSON record:
     {
     "Header" :
         {
-            "Version" : 1   
+            "Version" : 1
         },
     "Parameter" :
         {

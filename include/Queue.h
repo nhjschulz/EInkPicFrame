@@ -1,23 +1,23 @@
 /*
  * BSD 3-Clause License
- * 
+ *
  * Copyright (c) 2021, Norbert Schulz
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -39,19 +39,19 @@
 /** Implementation of a fixed size queue elements of type "T".
  *  The queue buffer is provided as a T array of N > 2 elements.
  *  The Queue capacity is one less the array entries. This space
- *  loss is due to emtpy vs. full detection. 
+ *  loss is due to emtpy vs. full detection.
  */
 template<typename T>
 class Queue
 {
     public:
 
-        /** Construct a queue with given buffer 
-         *  @param[in] buffer array with 'entries of T elements 
+        /** Construct a queue with given buffer
+         *  @param[in] buffer array with 'entries of T elements
          *  @param[in] number of entries in buffer
          */
         Queue(T buffer[], uint8_t entries);
-        
+
         ~Queue()
         {
         }
@@ -71,13 +71,13 @@ class Queue
         /** reset the queue to be empty */
         void    clear();
 
-        /** Add element to queue 
+        /** Add element to queue
          *  @param[in] element  element to copy into queue
          *  @return true of succesfull, false if queue full
          */
         bool    put(const T& element);
 
-        /** Get element from queue 
+        /** Get element from queue
          * @param[out] element  destination for extracted element
          * @return true if element returned, false if queue empty
         */
@@ -93,7 +93,7 @@ class Queue
 
 // ---------------------- Iniliners ------------------------------------------
 
-template <class T> 
+template <class T>
 Queue<T>::Queue(T buffer[], uint8_t size) :
     m_wrIdx(0u),
     m_rdIdx(0u),
@@ -101,8 +101,8 @@ Queue<T>::Queue(T buffer[], uint8_t size) :
     m_buffer(buffer)
 {
 }
- 
-template <class T> 
+
+template <class T>
 inline uint8_t Queue<T>::used() const
 {
     uint8_t usedSlots(m_wrIdx);
@@ -119,40 +119,40 @@ inline uint8_t Queue<T>::used() const
     return usedSlots;
 }
 
-template <class T> 
+template <class T>
 inline uint8_t Queue<T>::available() const
 {
     return m_size - this->used() - 1;
 }
 
-template <class T> 
+template <class T>
 inline bool Queue<T>::isEmpty() const
 {
     return m_wrIdx == m_rdIdx;
 }
 
-template <class T> 
+template <class T>
 inline bool Queue<T>::isFull() const
 {
     return this->used() == (m_size - 1);
 }
 
-template <class T> 
+template <class T>
 inline void Queue<T>::clear()
 {
     m_wrIdx = 0u;
     m_rdIdx = 0u;
 }
 
-template <class T> 
+template <class T>
 inline bool Queue<T>::put(const T& element)
 {
     uint8_t next((m_wrIdx + 1) % m_size); /**< next insert idx */
     bool    result(false);
-    
+
     if (next != m_rdIdx)
     {
-        // queue is not yet full 
+        // queue is not yet full
 
         m_buffer[next] = element;
         m_wrIdx = next;   /* atomic 8bit, no need for lock */
@@ -162,12 +162,12 @@ inline bool Queue<T>::put(const T& element)
     return result;
 }
 
-template <class T> 
+template <class T>
 inline bool Queue<T>::get(T& element)
 {
     bool result(false);
 
-    if (!isEmpty()) 
+    if (!isEmpty())
     {
         uint8_t next((m_rdIdx + 1) % m_size); /**< next read idx */
 

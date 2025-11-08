@@ -1,23 +1,23 @@
 /*
  * BSD 3-Clause License
- * 
- * Copyright (c) 2022, Norbert Schulz
+ *
+ * Copyright (c) 2022-2025, Norbert Schulz
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -39,7 +39,7 @@
 
 /**
  * @brief Internal state of file system access
- * 
+ *
  */
 enum FileIoStatus
 {
@@ -80,7 +80,7 @@ namespace service
         if (FR_OK == res)
         {
            g_status = FIO_MOUNT;
-           
+
             /* expect data in epd directory */
             res = f_chdir(g_dirPath);
             DEBUG_LOGP("FileIo f_chdir-> %d\r\n", res);
@@ -89,7 +89,7 @@ namespace service
             {
                 /* start to search for *.epd in /epd  directory
                  */
-                res = f_findfirst(&g_dir, &g_fno, g_dirPath, g_fnPattern); 
+                res = f_findfirst(&g_dir, &g_fno, g_dirPath, g_fnPattern);
                 DEBUG_LOGP("FileIo f_findfirst-> %d\r\n", res);
                 if ((FR_OK == res) && (0 != g_fno.fname[0]))
                 {
@@ -97,7 +97,7 @@ namespace service
                 }
             }
         }
-        
+
         return FIO_READY == g_status;
     }
 
@@ -129,7 +129,7 @@ namespace service
             /* reached end of entries, restart */
             f_closedir(&g_dir);
 
-            res = f_findfirst(&g_dir, &g_fno, g_dirPath, g_fnPattern); 
+            res = f_findfirst(&g_dir, &g_fno, g_dirPath, g_fnPattern);
             DEBUG_LOGP("FileIo f_findfirst-> %d\r\n", res);
             if ((FR_OK == res) && (0 != g_fno.fname[0]))
             {
@@ -162,7 +162,7 @@ namespace service
                 g_status = FIO_OPEN;
             }
         }
-        
+
         return FIO_OPEN == g_status;
     }
 
@@ -181,7 +181,7 @@ namespace service
                 g_status = FIO_READY;
             }
         }
-        
+
         return FIO_READY == g_status;
     }
 
@@ -221,7 +221,7 @@ namespace service
     	    {
                 g_enable = false;
             }
-            else 
+            else
             {
                 g_enable = true;
             }

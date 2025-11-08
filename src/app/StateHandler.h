@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2022, Norbert Schulz
+ * Copyright (c) 2022-2025, Norbert Schulz
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without

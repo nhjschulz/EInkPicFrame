@@ -1,23 +1,23 @@
 /*
  * BSD 3-Clause License
- * 
- * Copyright (c) 2022, Norbert Schulz
+ *
+ * Copyright (c) 2022-2025, Norbert Schulz
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -38,7 +38,7 @@ namespace service
 {
     /**
      * @brief Lightweight abstraction class for FileIO.
-     * 
+     *
      * Abstracts from the used FAT FS implementation to limit
      * rework in case we'll use another library in future.
      */
@@ -48,37 +48,37 @@ namespace service
 
         /**
          * @brief size of shared io buffer.
-         * 
+         *
          */
         static const uint8_t SHARED_BUF_SIZE = 100u;
 
         /**
          * @brief Shared data buffer for file IO
-         * 
+         *
          * A shared IO buffer is used to reduce precious RAM consumption
-         * on the AVR 328P. 
+         * on the AVR 328P.
          */
         static uint8_t iobuf[SHARED_BUF_SIZE];
 
         /**
          * @brief Enable file IO access
-         * 
+         *
          * Power SD Card modul and initialze it
-         * 
+         *
          */
         static bool enable();
 
         /**
          * @brief Disable FileIO
-         * 
+         *
          */
         static void disable();
 
         /**
          * @brief Initialize FileIO
-         * 
+         *
          * FatFS mount and directory read initialisation.
-         * 
+         *
          * @return true All worked fine
          * @return false error occured
          */
@@ -86,53 +86,53 @@ namespace service
 
         /**
          * @brief open given file
-         * 
-         * @return true 
-         * @return false 
+         *
+         * @return true
+         * @return false
          */
         static bool open(const char * fname = getFileName());
 
         /**
          * @brief close actual file
-         * 
-         * @return true 
-         * @return false 
+         *
+         * @return true
+         * @return false
          */
         static bool close();
 
         /**
          * @brief advance to next file in directory
-         * 
-         * @return true 
-         * @return false 
+         *
+         * @return true
+         * @return false
          */
         static bool next();
- 
+
         /**
          * @brief read a block from open file
-         * 
+         *
          * @param buf buffer to receive data
          * @param size number of bytes in buffer
          * @param read return number of byes read
-         * @return true 
-         * @return false 
+         * @return true
+         * @return false
          */
         static bool read(void * buf, uint16_t size, uint16_t& read);
 
         /**
          * @brief Get the Volume Serial Number of mounted FS
-         * 
+         *
          * Used to detect card swaps between sleeps
-         * 
-         * @param[out] vsn volume serial number  
-         * @return true 
-         * @return false 
+         *
+         * @param[out] vsn volume serial number
+         * @return true
+         * @return false
          */
         static bool getVolumeSerialNumber(uint32_t& vsn);
 
         /**
          * @brief Get the actual filename from epd/img directory iterating
-         * 
+         *
          * @return const char*  actual filename
          */
         static const char * getFileName();

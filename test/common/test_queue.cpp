@@ -1,23 +1,23 @@
 /*
  * BSD 3-Clause License
- * 
+ *
  * Copyright (c) 2021, Norbert Schulz
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -36,7 +36,7 @@
 #include <unity.h>
 #include "Queue.h"
 
-void test_queue_generic(void) 
+void test_queue_generic(void)
 {
     uint8_t buf[11];
     Queue<uint8_t> q(buf, 11);
@@ -50,7 +50,7 @@ void test_queue_generic(void)
     TEST_ASSERT_EQUAL(false, q.isFull());
     TEST_ASSERT_EQUAL(9, q.available());
     TEST_ASSERT_EQUAL(1, q.used());
-    
+
     q.clear();
     TEST_ASSERT_EQUAL(true, q.isEmpty());
     TEST_ASSERT_EQUAL(false, q.isFull());
@@ -81,7 +81,7 @@ void test_queue_generic(void)
 }
 
 /** Test the corner casse of a one byte queue */
-void test_queue_1_element(void) 
+void test_queue_1_element(void)
 {
     uint8_t buf[2];
     Queue<uint8_t> singleByteQueue(buf,2);
@@ -99,10 +99,10 @@ void test_queue_1_element(void)
     TEST_ASSERT_EQUAL(1, singleByteQueue.used());
 
     TEST_ASSERT_EQUAL(false, singleByteQueue.put(0x04));  // discarded on queue full
-    
+
     uint8_t expect_16(0);
     TEST_ASSERT_EQUAL(true, singleByteQueue.get(expect_16));
     TEST_ASSERT_EQUAL(16u, expect_16);
-    TEST_ASSERT_EQUAL(false, singleByteQueue.get(expect_16)); // empty 
-}    
+    TEST_ASSERT_EQUAL(false, singleByteQueue.get(expect_16)); // empty
+}
 

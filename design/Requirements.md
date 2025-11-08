@@ -1,6 +1,6 @@
 # Project Requirements
 
-The page lists a set of requirments for the design of this project.
+The page lists a set of requirements for the design of this project.
 
 ## General Requirements
 

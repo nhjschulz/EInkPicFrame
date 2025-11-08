@@ -14,9 +14,9 @@ The following sequence would plot 8 pixels with color 0..7:
 
    0x01, 0x23, 0x45, 0x67
 
-pixel(0,0) is the upper left, pixel(599, 447) the lower right one. 
+pixel(0,0) is the upper left, pixel(599, 447) the lower right one.
 
-The converter treats every argument on the command line as an image 
+The converter treats every argument on the command line as an image
 file name. It iterates over the files and writes the converted  result
 into a file with the same basename, but extension "epd" - for e paper display.
 
@@ -55,14 +55,14 @@ epd_palette = {
     (200, 200, 216) : 7  # (clear)
 }
 
-def map_palette(im : Image): 
+def map_palette(im : Image):
     "Map the image palette colors to be in the order expected by the EPD"
 
     palette = im.palette
 
     if (palette is None):
         raise Exception("image has no color palette")
-    
+
     data = palette.palette   # get rgb byte array
     length = len(data) // 3
     if (COLORS != length) :
@@ -94,17 +94,17 @@ def convert(filename, im : Image) :
                 val = ((palette_index_map[ph] << 4) | palette_index_map[pl])
                 data.append(val)
 
-        imgfile.write(data) 
+        imgfile.write(data)
         imgfile.close()
         print('Created epd image {}'.format(outname))
 
-    except Exception as e: 
+    except Exception as e:
         print('{} : {}'.format(outname, e))
 
 
 if __name__ == "__main__":
     import sys
-    
+
     if len(sys.argv) <= 1:
         print('usage {}: image_file [image_file]...'.format(sys.argv[0]))
         exit(1)
@@ -115,7 +115,7 @@ if __name__ == "__main__":
                 if ((WIDTH != im.size[0]) or (HEIGHT != im.size[1])):
                     print('{}: wrong image size {}'.format(infile, im.size))
                     continue
-                
+
                 if (not isinstance(im.getpixel((0,0)), int)):
                     print('{}: wrong color format, need palette indexed'.format(infile))
                     continue

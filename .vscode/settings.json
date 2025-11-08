@@ -1,5 +1,8 @@
 {
     "files.associations": {
         "diskio.h": "c"
-    }
+    },
+    "cSpell.words": [
+        "microcontroller"
+    ]
 }

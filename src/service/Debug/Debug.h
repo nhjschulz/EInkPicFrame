@@ -1,23 +1,23 @@
 /*
  * BSD 3-Clause License
- * 
+ *
  * Copyright (c) 2021, Norbert Schulz
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. Neither the name of the copyright holder nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -45,18 +45,18 @@
 #define DEBUG_TRIGGER(v)     service::Debug::setTriggerPin(v)
 namespace service
 {
-    /** Initialize debug module 
+    /** Initialize debug module
      *  @return false on failure UART openend with write before ?)
      */
-    class Debug 
+    class Debug
     {
         public:
 
-        /** Initialize debug module 
+        /** Initialize debug module
         */
         static bool init(void);
 
-        /** Printf wrapper to emit logs 
+        /** Printf wrapper to emit logs
          * @param[in] fmt string  with printf fmt
          */
         static void log(const char * fmt, ...);
@@ -68,18 +68,18 @@ namespace service
 
         /**
          * @brief Set the Trigger Pin
-         * 
+         *
          * @param set  true = high, false = low
          */
         static void setTriggerPin(bool set);
     };
 }
 
-#else //defined(WITH_DEBUG) 
+#else //defined(WITH_DEBUG)
 
 #define DEBUG_INIT() true
-#define DEBUG_LOG(fmt, ...) 
-#define DEBUG_LOGP(fmt, ...) 
-#endif //defined(WITH_DEBUG) 
+#define DEBUG_LOG(fmt, ...)
+#define DEBUG_LOGP(fmt, ...)
+#endif //defined(WITH_DEBUG)
 
 #endif //DEBUG_H_INCLUDED
