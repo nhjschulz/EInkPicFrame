@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-from crc import Crc8, TableBasedCrcRegister, CrcRegister
+from crc import Calculator, Crc8
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -37,18 +37,17 @@ if __name__ == "__main__":
     print('supVoltage : {} mV'.format(supVoltage))
 
     # build header bytes
-    crc8 = CrcRegister(Crc8.CCITT)
-    crc8.init()
-    crc8.update(param_bytes)
+    calculater = Calculator(Crc8.CCITT)
+    crc8 = calculater.checksum(param_bytes)
 
     header_bytes.append(69)   # E
     header_bytes.append(80)   # P
     header_bytes.append(68)   # D
     header_bytes.append(1)    # version 1
     header_bytes.append(4)    # 4 parameter
-    header_bytes.append(crc8.digest())  #  CRC
+    header_bytes.append(crc8)  #  CRC
 
-    print('crc        : 0x{:02x}'.format(crc8.digest()))
+    print('crc        : 0x{:02x}'.format(crc8))
 
     print('\r\nStoring configuration into {}'.format(output_file))
     output = open(output_file, "wb")

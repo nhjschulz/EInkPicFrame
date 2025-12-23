@@ -68,7 +68,15 @@ It generates the parameter data based on the following JSON record:
         }
     }
 
-Call the tool es follows:
+Call the tool as follows:
+
+Setup virtual environment:
+
+    python -m venv .venv
+    .venv/scripts/activate
+    pip install crc
+
+Call the converter
 
     $ python epdcfg.py param.json
     Reading data from .\param.json
@@ -82,5 +90,5 @@ Call the tool es follows:
     Storing configuration into epd.cfg
 
 This process is a little cumbersome. If there is space left for
-parsing at the end, I'll probably replace it with a ASCII parser
+parsing at the end, I'll probably replace it with an ASCII parser
 and a text file approach.
